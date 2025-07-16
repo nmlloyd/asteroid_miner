@@ -7,4 +7,6 @@ class Manager
         Manager();
         void Start();
         void Update();
+    private:
+        Asteroid asteroid;
 };
