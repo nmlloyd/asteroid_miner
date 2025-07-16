@@ -1,2 +1,2 @@
 # asteroid_miner
-Student project coded by me and one other in C++
+Student project coded with Raylib in C++
