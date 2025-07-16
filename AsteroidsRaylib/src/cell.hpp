@@ -4,9 +4,12 @@ class Cell
 {
     public:
         Cell();
-        ~Cell();
+        //~Cell();
         void Draw();
+        void DrawOutlines();
         Vector2 GetUnitSize();
+        Rectangle GetCollider();
         Vector2 position;
-        static Texture2D unitTex;
+        int id = 2;
+        static Texture2D unitTex[8];
 };

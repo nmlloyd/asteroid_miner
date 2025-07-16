@@ -1,0 +1,1 @@
+a = (-1/2 sqrt((-2 f h + 2 f y - 2 k v + 2 v x)^2 - 4 (f^2 + v^2) (h^2 - 2 h y + k^2 - 2 k x - r^2 - 2 r + x^2 + y^2 - 1)) + f h - f y + k v - v x)/(f^2 + v^2) and f^2 + v^2!=0

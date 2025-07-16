@@ -10,7 +10,11 @@ class Asteroid
         void Update();
         void Draw();
         Vector2 position;
-    private:
         std::vector<Cell> cells; //4x4
-        std::vector<std::vector<int>> grid;
+    private:
+        // std::vector<std::vector<int>> grid;
+        std::vector<Vector2> Generate(int r);
+        std::vector<Vector2> MidPointCircleDraw(int xcenter, int ycenter, int r);
+        std::vector<Vector2> drawcircle(int xc,int yc,int x,int y);
+        bool IsInsideCircle(Vector2 point, int xcenter, int ycenter, int r);
 };

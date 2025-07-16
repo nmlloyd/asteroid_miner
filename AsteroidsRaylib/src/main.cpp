@@ -11,12 +11,13 @@ int main()
     SetTargetFPS(60);
 
     Manager manager;
+    manager.Start();
 
     while(!WindowShouldClose()) {
-        // manager.Update();
+        manager.Update();
         BeginDrawing();
         ClearBackground(BLACK);
-        manager.Start();
+        manager.Draw();
         // DrawRectangle(1255, 656, 100, 100, WHITE);
         EndDrawing();
     }
