@@ -4,16 +4,23 @@
 using namespace std;
 Asteroid::Asteroid()
 {
-    Vector2 center = {-8, -8};
-    vector<Vector2> vecs = Generate(8);
-    for(int i = 0; i < vecs.size(); i++)
-    {
-        Vector2 vec = vecs[i];
-        Cell cell = Cell();
-        cell.position = {GetScreenWidth()/2 + (cell.GetUnitSize().x * (vec.x + center.x)), GetScreenHeight()/2 + (cell.GetUnitSize().y * (vec.y + center.y))};
-        cell.id = GetRandomValue(2, 4);//random center
-        cells.push_back(cell);
-    }
+    // Vector2 center = {-8, -8};
+    CreateRandomAsteroid(position, GetRandomValue(minNodes, maxNodes), minNodeRadius, maxNodeRadius);
+    // Vector2 centerMain = {-8, -8};
+    // vector<Vector2> vecs = Generate(GetRandomValue(1, 4)*2 + 1);
+    // for(int i = 0; i < vecs.size(); i++)
+    // {
+    //     Vector2 vec = vecs[i];
+    //     Cell cell = Cell();
+    //     cell.position = {GetScreenWidth()/2 + (cell.GetUnitSize().x * (vec.x + centerMain.x)), GetScreenHeight()/2 + (cell.GetUnitSize().y * (vec.y + centerMain.y))};
+    //     cell.id = GetRandomValue(2, 4);//random center
+    //     int rnd = GetRandomValue(0, 16);
+    //     if(rnd == 7)
+    //     {
+    //         cell.id = 5;
+    //     }
+    //     cells.push_back(cell);
+    // }
 }
 
 Asteroid::~Asteroid()
@@ -116,3 +123,88 @@ vector<Vector2> Asteroid::MidPointCircleDraw(int xcenter, int ycenter, int radiu
     return circle;
  }
  
+void Asteroid::CreateRandomAsteroid(Vector2 centerMain, int maxAsteroids, int min, int max)
+{
+    int lastRad = -1;
+    Vector2 localCenter = {0, 0};
+    float randomRadiusPrev = 0;
+    for(int i = 0; i < maxAsteroids + 1; i++)
+    {
+        float randomRadius = GetRandomValue(min,max);
+        int randomDirection;
+        if(i != 0)
+            randomDirection = GetRandomValue(0,5)%4;
+        else
+            randomDirection = 4;
+
+        if(randomDirection == lastRad)
+        {
+            while(randomDirection == lastRad)
+            {
+                randomDirection = GetRandomValue(0,5)%4;
+            }
+        }
+        cout<<randomDirection<<endl;
+
+        // float sub = floorf(max/2);
+        switch (randomDirection)
+        {
+            case 0://right
+                localCenter.x += randomRadiusPrev ;//+ randomRadius - sub;
+                break;
+            case 1://left
+                localCenter.x -= randomRadiusPrev ;//+ randomRadius - sub;
+                break;
+            case 2://up
+                localCenter.y += randomRadiusPrev ;//+ randomRadius - sub;
+                break;
+            case 3://down
+                localCenter.y -= randomRadiusPrev ;//+ randomRadius - sub;
+                break;
+            default:
+                break;
+        }
+        cout << "(" << localCenter.x << ", " << localCenter.y << ")" << randomRadius << endl;
+        vector<Vector2> vecs = Generate(randomRadius);
+        for(int i = 0; i < vecs.size(); i++)
+        {
+            Vector2 vec = vecs[i];
+            Cell cell = Cell();
+            cell.position = {GetScreenWidth()/2 + (cell.GetUnitSize().x * (vec.x + localCenter.x) + centerMain.x ), GetScreenHeight()/2 + (cell.GetUnitSize().y * (vec.y + localCenter.y) + centerMain.y)};
+            cell.id = GetRandomValue(2, 4);//random center
+            int rnd = GetRandomValue(0, 16);
+            // if(rnd == 7)
+            // {
+            //     cell.id = 5;
+            // }
+            cells.push_back(cell);
+        }
+        switch (randomDirection)
+        {
+            case 0://right
+                lastRad = 1;
+                break;
+            case 1://left
+                lastRad = 0;
+                break;
+            case 2://up
+                lastRad = 3;
+                break;
+            case 3://down
+                lastRad = 2;
+                break;
+            default:
+                break;
+        }
+        randomRadiusPrev = randomRadius;
+    }
+}
+
+Vector2 Asteroid::WorldToGrid(Vector2 pixelCoords)
+{
+    return {pixelCoords.x / 12, pixelCoords.y / 12};
+}
+Vector2 Asteroid::GridToWorld(Vector2 gridCoords)
+{
+    return {gridCoords.x * 12, gridCoords.y * 12};
+}

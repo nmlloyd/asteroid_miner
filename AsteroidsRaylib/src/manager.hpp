@@ -1,6 +1,8 @@
 #include <raylib.h>
+#include <vector>
 #include "asteroid.hpp"
 #include "player.hpp"
+#include "star.hpp"
 
 class Manager
 {
@@ -13,4 +15,11 @@ class Manager
         Asteroid asteroid;
         Camera2D camera;
         Player player;
+        int rnd = 30;
+        void DestroyInactiveStars();
+        // float gridX; //= 123.0f;
+        // float gridY;// = 123.0f;
+        // int rx ;//= GetRandomValue(-rnd, rnd);
+        // int ry ;//= GetRandomValue(-rnd, rnd);
+        std::vector<Star> stars;
 };

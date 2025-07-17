@@ -1,6 +1,8 @@
 #include <raylib.h>
 #include <string>
 #include "manager.hpp"
+
+
 int main()
 {
     int windowWidth = GetMonitorWidth(GetCurrentMonitor());

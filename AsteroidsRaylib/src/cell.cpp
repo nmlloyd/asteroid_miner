@@ -23,7 +23,7 @@ Cell::Cell()
                     unitTex[i] = LoadTexture("Graphics/meteor_tile_center_4.png");
                     break;
                 case 4:
-                    // unitTex[i] = LoadTexture("Graphics/meteor_tile_topex.png");
+                    unitTex[i] = LoadTexture("Graphics/meteor_tile_gold.png");
                     break;
                 case 5:
                     // unitTex[i] = LoadTexture("Graphics/meteor_tile_btmex.png");
