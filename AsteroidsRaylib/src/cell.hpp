@@ -14,5 +14,6 @@ class Cell
         int id = 2;
         float step = -1;
         bool isActiveAndEnabled = true;
-        static Texture2D unitTex[8];
+        bool drawOutline = true;
+        static Texture2D unitTex[10];
 };

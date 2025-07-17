@@ -191,7 +191,8 @@ void Manager::Update()
                     // std::cout << cell.GetCollider().x << ", " << cell.GetCollider().y << ", " << cell.GetCollider().width << ", " << cell.GetCollider().height << std::endl;
                     if(CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), cell.GetCollider()))
                     {
-                        cell.step += 1;
+                        float mineSpeed = 2.0f;
+                        cell.step += mineSpeed;
                         // break;
                     }
                 }

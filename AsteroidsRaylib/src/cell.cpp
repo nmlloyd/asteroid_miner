@@ -1,7 +1,7 @@
 #include "cell.hpp"
 #include <cmath>
 
-const int texs = 8;
+const int texs = 10;
 Texture2D Cell::unitTex[texs] = {};
 Cell::Cell()
 {
@@ -36,7 +36,13 @@ Cell::Cell()
                     // unitTex[i] = LoadTexture("Graphics/meteor_tile_leftex.png");
                     break;
                 case 7:
-                    // unitTex[i] = LoadTexture("Graphics/meteor_tile_rightex.png");
+                    unitTex[i] = LoadTexture("Graphics/dark_full.png");
+                    break;
+                case 8:
+                    unitTex[i] = LoadTexture("Graphics/dark_50perc.png");
+                    break;
+                case 9:
+                    unitTex[i] = LoadTexture("Graphics/dark_25perc.png");
                     break;
             }
         }
@@ -65,7 +71,7 @@ void Cell::Draw()
 }
 void Cell::DrawOutlines()
 {
-    if(isActiveAndEnabled)
+    if(isActiveAndEnabled && drawOutline)
         DrawTextureEx(unitTex[0], {position.x - 8, position.y - 8}, 0, 4, WHITE);
 }
 Vector2 Cell::GetUnitSize()

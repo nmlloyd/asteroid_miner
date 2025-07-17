@@ -21,6 +21,7 @@ class Asteroid
         unsigned int maxNodeRadius = 10;
         bool isActiveAndEnabled;
         std::vector<Cell> cells; //4x4
+        std::vector<Cell> darkCells100;
     private:
         // std::vector<std::vector<int>> grid;
         std::vector<Vector2> Generate(int r);
