@@ -11,7 +11,7 @@ BaseCharacter::BaseCharacter(Transform2D _transform, Texture2D _sprite)
 }
 void BaseCharacter::Draw()
 {
-    DrawTextureEx(sprite, transform.position, transform.rotation, transform.scale, WHITE);
+    DrawTextureEx(sprite, transform.position, transform.rotation, transform.scale, {255, 255, 255, 0});//WHITE);
 }
 void BaseCharacter::Update()
 {

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <raylib.h>
 #include "cell.hpp"
 #include <vector>
@@ -5,17 +7,19 @@
 class Asteroid
 {
     public:
-        Asteroid();
+        Asteroid(Vector2 pos);
         ~Asteroid();
         void Update();
         void Draw();
         Vector2 WorldToGrid(Vector2 pixelCoords);
         Vector2 GridToWorld(Vector2 gridCoords);
         Vector2 position;
+        Vector2 gridPosition;
         unsigned int minNodes = 2;
-        unsigned int maxNodes = 5;
+        unsigned int maxNodes = 10;
         unsigned int minNodeRadius = 3;
-        unsigned int maxNodeRadius = 7;
+        unsigned int maxNodeRadius = 10;
+        bool isActiveAndEnabled;
         std::vector<Cell> cells; //4x4
     private:
         // std::vector<std::vector<int>> grid;

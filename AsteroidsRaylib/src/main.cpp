@@ -16,6 +16,7 @@ int main()
     manager.Start();
 
     while(!WindowShouldClose()) {
+        HideCursor();
         manager.Update();
         BeginDrawing();
         ClearBackground(BLACK);

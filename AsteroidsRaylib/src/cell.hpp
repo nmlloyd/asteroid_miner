@@ -1,3 +1,4 @@
+#pragma once
 #include <raylib.h>
 
 class Cell
@@ -11,5 +12,7 @@ class Cell
         Rectangle GetCollider();
         Vector2 position;
         int id = 2;
+        float step = -1;
+        bool isActiveAndEnabled = true;
         static Texture2D unitTex[8];
 };

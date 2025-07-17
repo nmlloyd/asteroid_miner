@@ -2,7 +2,7 @@
 
 Star::Star()
 {
-
+    size = GetRandomValue(0, 2);
 }
 
 // void Star::DestroyInactiveStars()
@@ -35,6 +35,11 @@ void Star::Update()
 void Star::Draw()
 {
     if(isActive)
-        DrawRectangle(position.x, position.y, 2, 2, WHITE);
+    {
+        if(size == 0)//half-transparent
+            DrawRectangle(position.x, position.y, 1, 1, {255, 255, 255, 127});
+        else
+            DrawRectangle(position.x, position.y, size, size, WHITE);
+    }
     // else
 }

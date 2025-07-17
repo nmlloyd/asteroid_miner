@@ -1,3 +1,4 @@
+#pragma once
 #include <raylib.h>
 #include "player.hpp"
 
@@ -14,5 +15,5 @@ class Star
         void Update();
         void Draw();
     private:
-        ;
+        int size;
 };

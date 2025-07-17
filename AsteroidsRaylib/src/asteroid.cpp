@@ -2,9 +2,11 @@
 #include <iostream>
 #include <cmath>
 using namespace std;
-Asteroid::Asteroid()
+Asteroid::Asteroid(Vector2 pos)
 {
     // Vector2 center = {-8, -8};
+    isActiveAndEnabled = true;
+    position = pos;
     CreateRandomAsteroid(position, GetRandomValue(minNodes, maxNodes), minNodeRadius, maxNodeRadius);
     // Vector2 centerMain = {-8, -8};
     // vector<Vector2> vecs = Generate(GetRandomValue(1, 4)*2 + 1);
@@ -144,7 +146,6 @@ void Asteroid::CreateRandomAsteroid(Vector2 centerMain, int maxAsteroids, int mi
                 randomDirection = GetRandomValue(0,5)%4;
             }
         }
-        cout<<randomDirection<<endl;
 
         // float sub = floorf(max/2);
         switch (randomDirection)
@@ -164,14 +165,13 @@ void Asteroid::CreateRandomAsteroid(Vector2 centerMain, int maxAsteroids, int mi
             default:
                 break;
         }
-        cout << "(" << localCenter.x << ", " << localCenter.y << ")" << randomRadius << endl;
         vector<Vector2> vecs = Generate(randomRadius);
         for(int i = 0; i < vecs.size(); i++)
         {
             Vector2 vec = vecs[i];
             Cell cell = Cell();
             cell.position = {GetScreenWidth()/2 + (cell.GetUnitSize().x * (vec.x + localCenter.x) + centerMain.x ), GetScreenHeight()/2 + (cell.GetUnitSize().y * (vec.y + localCenter.y) + centerMain.y)};
-            cell.id = GetRandomValue(2, 4);//random center
+            cell.id = GetRandomValue(2, 3);//random center
             int rnd = GetRandomValue(0, 16);
             // if(rnd == 7)
             // {
