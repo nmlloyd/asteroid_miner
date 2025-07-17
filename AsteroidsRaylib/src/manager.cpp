@@ -20,6 +20,23 @@ void Manager::Start()
     camera.offset = { GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
+    int rnd = 60;
+    float gridX = 123.0f;
+    float gridY = 123.0f;
+    for (int y = 0; y < ceilf(GetScreenHeight()/gridY); y++)
+    {
+        for (int x = 0; x < ceilf(GetScreenWidth()/gridX); x++)
+        {
+            int rx = GetRandomValue(-rnd, rnd);
+            int ry = GetRandomValue(-rnd, rnd);
+            Vector2 vec = {x*gridX + rx, y*gridY + ry};
+            Star star;
+            star.position = vec;
+            star.isActive = true;
+            star.player = player;
+            stars.push_back(star);
+        }
+    }
     
 }
 void Manager::DestroyInactiveStars()
@@ -49,10 +66,10 @@ void Manager::Draw()
         //         stars.push_back(vec);
         //     }
         // }
-        // for(int i = 0; i < stars.size(); i++)
-        // {
-        //     DrawRectangle(stars[i].x, stars[i].y, 2, 2, WHITE);
-        // } 
+        for(int i = 0; i < stars.size(); i++)
+        {
+            stars[i].Draw();
+        } 
     
         asteroid.Draw();
         player.Draw();

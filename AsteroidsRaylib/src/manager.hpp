@@ -1,7 +1,6 @@
 #include <raylib.h>
 #include <vector>
 #include "asteroid.hpp"
-#include "player.hpp"
 #include "star.hpp"
 
 class Manager
