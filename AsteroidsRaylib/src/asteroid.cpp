@@ -170,7 +170,7 @@ void Asteroid::CreateRandomAsteroid(Vector2 centerMain, int maxAsteroids, int mi
                 break;
         }
         vector<Vector2> vecs = Generate(randomRadius);
-        vector<Vector2> outline1 = MidPointCircleDraw(randomRadius, randomRadius, randomRadius);
+        // vector<Vector2> outline1 = MidPointCircleDraw(randomRadius, randomRadius, randomRadius);
         // vector<Vector2> dark50; //= Generate(randomRadius);
         // for(auto& vec : vecs)
         // {
@@ -192,27 +192,27 @@ void Asteroid::CreateRandomAsteroid(Vector2 centerMain, int maxAsteroids, int mi
                 cell.id = 4;
             }
             
-            bool isNotOutline = true;
-            for(Vector2& vec_ : outline1)
-            {
-                Vector2 newVec = {GetScreenWidth()/2 + (cell.GetUnitSize().x * (vec_.x + localCenter.x) + centerMain.x ), GetScreenHeight()/2 + (cell.GetUnitSize().y * (vec_.y + localCenter.y) + centerMain.y)};
-                if(newVec.x == cell.position.x && newVec.y == cell.position.y)//is an outline
-                {
-                    isNotOutline = false;
-                }
-            }
+            // bool isNotOutline = true;
+            // for(Vector2& vec_ : outline1)
+            // {
+            //     Vector2 newVec = {GetScreenWidth()/2 + (cell.GetUnitSize().x * (vec_.x + localCenter.x) + centerMain.x ), GetScreenHeight()/2 + (cell.GetUnitSize().y * (vec_.y + localCenter.y) + centerMain.y)};
+            //     if(newVec.x == cell.position.x && newVec.y == cell.position.y)//is an outline
+            //     {
+            //         isNotOutline = false;
+            //     }
+            // }
 
-            if(isNotOutline)
-            {
-                cells.push_back(cell);
-                cell.id = 9;
-                darkCells100.push_back(cell);
-            }
-            else
-            {
-                cells.push_back(cell);
-            }
-            // cells.push_back(cell);
+            // if(isNotOutline)
+            // {
+            //     cells.push_back(cell);
+            //     cell.id = 9;
+            //     darkCells100.push_back(cell);
+            // }
+            // else
+            // {
+            //     cells.push_back(cell);
+            // }
+            cells.push_back(cell);
         }
         switch (randomDirection)
         {

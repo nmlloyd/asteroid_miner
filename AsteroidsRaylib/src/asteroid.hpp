@@ -3,6 +3,7 @@
 #include <raylib.h>
 #include "cell.hpp"
 #include <vector>
+#include "structures.hpp"
 
 class Asteroid
 {
@@ -21,7 +22,7 @@ class Asteroid
         unsigned int maxNodeRadius = 10;
         bool isActiveAndEnabled;
         std::vector<Cell> cells; //4x4
-        std::vector<Cell> darkCells100;
+        std::vector<ShadingPixel> shading;
     private:
         // std::vector<std::vector<int>> grid;
         std::vector<Vector2> Generate(int r);

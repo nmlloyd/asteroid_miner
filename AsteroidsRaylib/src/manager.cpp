@@ -107,11 +107,18 @@ void Manager::Draw()
             else
                 ast.isActiveAndEnabled = true;
             if(ast.isActiveAndEnabled)
+            {
                 ast.Draw();
+                for(auto& pixel : ast.shading)
+                {
+                    DrawPixelV(GetScreenToWorld2D(pixel.position, camera), {0, 0, 0, (unsigned char)roundf(pixel.alpha * 255)});
+                }
+            }
         }
         // asteroid.Draw();
         player.Draw();
     EndMode2D();
+    
     DrawRectangle(mouse.position.x, mouse.position.y, 10, 10, RED);
     // Cell cell = Cell();
     // cell.position = {1280, 800};
