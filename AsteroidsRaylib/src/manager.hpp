@@ -23,8 +23,9 @@ class Manager
         std::vector<Light> lights;
         void DestroyInactiveStars();
         void GenerateAsteroidsGrid(Vector2 positionInScreenWidths);
-        void UpdateLighting(std::vector<Light> lights);
+        // void UpdateLighting(std::vector<Light> lights, Asteroid& asteroid);
         float Clamp01(float toClamp);
+        float Clamp(float min, float max, float n);
         double Distance(Vector2 p1, Vector2 p2);
         // std::vector<std::vector<Texture2D>> shading[];
         // float gridX; //= 123.0f;

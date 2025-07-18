@@ -5,8 +5,8 @@
 
 int main()
 {
-    int windowWidth = GetMonitorWidth(GetCurrentMonitor());
-    int windowHeight = GetMonitorHeight(GetCurrentMonitor());
+    int windowWidth =( GetMonitorWidth(GetCurrentMonitor()));
+    int windowHeight = (GetMonitorHeight(GetCurrentMonitor()));
 
     InitWindow(windowWidth, windowHeight, "Asteroid Miner");
 

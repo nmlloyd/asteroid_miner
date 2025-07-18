@@ -1,5 +1,7 @@
 #include "cell.hpp"
 #include <cmath>
+#include <iostream>
+
 
 const int texs = 10;
 Texture2D Cell::unitTex[texs] = {};
@@ -53,32 +55,42 @@ Cell::Cell()
 // {
 //     UnloadTexture(unitTex);
 // }
-void Cell::Draw()
+int Cell::Draw()
 {
     if(isActiveAndEnabled)
     {
-        DrawTextureEx(unitTex[id - 1], position, 0, 4, WHITE);
+        DrawTextureEx(unitTex[id - 1], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, WHITE);
         if(step != -1)//do nothing if not breaking
         {
             if(step <= 2)
-                DrawTextureEx(unitTex[(int)(floorf(step)+4)], position, 0, 4, WHITE);
+            {
+                DrawTextureEx(unitTex[(int)(floorf(step)+4)], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, WHITE);
+                return 0;
+            }
             else
             {
                 isActiveAndEnabled = false;
+                return 1;
             }
         }
+        else
+            return 2;
     }
+    else    
+        return 3;
 }
 void Cell::DrawOutlines()
 {
     if(isActiveAndEnabled && drawOutline)
-        DrawTextureEx(unitTex[0], {position.x - 8, position.y - 8}, 0, 4, WHITE);
+        DrawTextureEx(unitTex[0], {position.x + relativeTo.x - 8, position.y + relativeTo.y - 8}, 0, 4, WHITE);
 }
 Vector2 Cell::GetUnitSize()
 {
-    return {float(unitTex[id - 1].width*4), float(unitTex[id - 1].height*4)};
+    Vector2 vec = {float(unitTex[id - 1].width*4), float(unitTex[id - 1].height*4)};
+        // std::cout<<vec.x<<", "<<vec.y<<std::endl;
+    return vec;
 }
-Rectangle Cell::GetCollider()
+Rectangle Cell::GetCollider()//world position
 {
-    return {position.x, position.y, (float)GetUnitSize().x, (float)GetUnitSize().y};
+    return {position.x + relativeTo.x, position.y + relativeTo.y, (float)GetUnitSize().x, (float)GetUnitSize().y};
 }
