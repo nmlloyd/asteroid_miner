@@ -22,7 +22,8 @@ class Asteroid
         unsigned int maxNodeRadius = 10;
         bool isActiveAndEnabled;
         std::vector<Cell> cells; //4x4
-        std::vector<ShadingPixel> shading;
+        Texture2D shading;
+        Vector2 topLeftCorner;
     private:
         // std::vector<std::vector<int>> grid;
         std::vector<Vector2> Generate(int r);

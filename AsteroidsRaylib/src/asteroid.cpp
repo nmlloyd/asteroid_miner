@@ -7,6 +7,7 @@ Asteroid::Asteroid(Vector2 pos)
     // Vector2 center = {-8, -8};
     isActiveAndEnabled = true;
     position = pos;
+    topLeftCorner = {position.x - (float)GetScreenWidth()/2, position.y - (float)GetScreenWidth()/2};
     CreateRandomAsteroid(position, GetRandomValue(minNodes, maxNodes), minNodeRadius, maxNodeRadius);
     // Vector2 centerMain = {-8, -8};
     // vector<Vector2> vecs = Generate(GetRandomValue(1, 4)*2 + 1);
@@ -44,10 +45,13 @@ void Asteroid::Draw()
     {
         cell.Draw();
     }
-    for(auto& cell : darkCells100)
-    {
-        cell.Draw();
-    }
+    // BeginBlendMode(BLEND_MULTIPLIED);
+        DrawTextureV(shading, topLeftCorner, WHITE);
+    // EndBlendMode();
+    // for(auto& cell : darkCells100)
+    // {
+    //     cell.Draw();
+    // }
 }
 bool Asteroid::IsInsideCircle(Vector2 point, int xcenter, int ycenter, int r)
 {
@@ -183,7 +187,7 @@ void Asteroid::CreateRandomAsteroid(Vector2 centerMain, int maxAsteroids, int mi
             vector<Vector2> outline1 = MidPointCircleDraw(randomRadius, randomRadius, randomRadius);
             Vector2 vec = vecs[i];
             Cell cell = Cell();
-            cell.position = {GetScreenWidth()/2 + (cell.GetUnitSize().x * (vec.x + localCenter.x) + centerMain.x ), GetScreenHeight()/2 + (cell.GetUnitSize().y * (vec.y + localCenter.y) + centerMain.y)};
+            cell.position = {GetScreenWidth()/2 + (cell.GetUnitSize().x * (vec.x + localCenter.x) + centerMain.x ), GetScreenWidth()/2 + (cell.GetUnitSize().y * (vec.y + localCenter.y) + centerMain.y)};
             
             cell.id = GetRandomValue(2, 3);//random center
             int rnd = GetRandomValue(0, 32);

@@ -6,6 +6,33 @@ Manager::Manager()
 {
     
 }
+
+void Manager::UpdateLighting(std::vector<Light> additionalLights)
+{
+    for (auto& asteroid : field)
+    {
+        Image calculatedShading = GenImageColor(GetScreenWidth()*2, GetScreenWidth()*2, {0, 255, 0, 127});
+        // Color* pixels = (Color*)calculatedShading.data;
+        for(auto& vec_ : asteroid.cells)
+        {
+            // position.x - (float)GetScreenWidth()/2, position.y - (float)GetScreenWidth()/2
+            Vector2 pixelVec = {vec_.position.x - GetScreenWidth()/2, vec_.position.y - GetScreenWidth()/2};
+            for(int x = 0; x < 48; x++)
+            {
+                for(int y = 0; y < 48; y++)
+                {
+                    int a = 0.5 * 255;
+                    Vector2 newPixelVec = {(int)(pixelVec.x + GetScreenWidth() + x) % (GetScreenWidth()*2), (int)(pixelVec.y + GetScreenHeight() + y) % (GetScreenWidth()*2)};
+                    ImageDrawPixel(&calculatedShading, newPixelVec.x, newPixelVec.y, {255, 0, 0, (unsigned char)a});
+                    //DrawRectangleV({newPixelVec.x + asteroid.topLeftCorner.x, newPixelVec.y + asteroid.topLeftCorner.y}, {48, 48}, WHITE);
+                }
+            }
+        }
+        asteroid.shading = LoadTextureFromImage(calculatedShading);
+        UnloadImage(calculatedShading);
+    }
+}
+
 void Manager::GenerateAsteroidsGrid(Vector2 positionInScreenWidths)
 {
     int rnd = GetScreenWidth()/2;
@@ -33,6 +60,7 @@ void Manager::GenerateAsteroidsGrid(Vector2 positionInScreenWidths)
         field.push_back(ast);
     }
 }
+
 
 void Manager::Start()
 {
@@ -109,14 +137,26 @@ void Manager::Draw()
             if(ast.isActiveAndEnabled)
             {
                 ast.Draw();
-                for(auto& pixel : ast.shading)
-                {
-                    DrawPixelV(GetScreenToWorld2D(pixel.position, camera), {0, 0, 0, (unsigned char)roundf(pixel.alpha * 255)});
-                }
+                // DrawRectangle(ast.position.x - (float)GetScreenWidth()/2, ast.position.y - (float)GetScreenWidth()/2, (float)GetScreenWidth()*2, (float)GetScreenWidth()*2, {0, 0, 255, 127});
+                // for(auto& pixel : ast.shading)
+                // {
+                //     DrawPixelV(pixel.position, {255, 0, 0, (unsigned char)roundf(pixel.alpha * 255)});
+                //     // std::cout << pixel.position.x << pixel.position.y << std::endl;
+                // }
             }
         }
         // asteroid.Draw();
         player.Draw();
+
+        
+        if(IsKeyPressed(KEY_B))
+        {
+            
+            UpdateLighting({});
+        }
+        // BeginBlendMode(BLEND_MULTIPLIED);
+        //     // DrawTexture(shading, );
+        // EndBlendMode();
     EndMode2D();
     
     DrawRectangle(mouse.position.x, mouse.position.y, 10, 10, RED);
@@ -215,4 +255,18 @@ void Manager::Update()
     DestroyInactiveStars();
 
     // lastPlayerScreenPos = playerScreenPos;
+}
+
+float Manager::Clamp01(float n)
+{
+    if(n > 1)
+        return 1;
+    else if (n < 0)
+        return 0;
+    else
+        return n;
+}
+double Manager::Distance(Vector2 p1, Vector2 p2)
+{
+    return std::sqrt(std::pow(p2.x-p1.x, 2) + std::pow(p2.y-p1.y, 2));
 }
