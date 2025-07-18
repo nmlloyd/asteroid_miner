@@ -68,9 +68,9 @@ void Manager::GenerateAsteroidsGrid(Vector2 positionInScreenWidths)
 void Manager::Start()
 {
     player = Player();
-    player.transform = {{(float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, 0.0f, 0.5f};
+    player.transform = {{(float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, 0.0f, 1.0f};
     player.transform.position = {0, 0};
-    player.sprite = LoadTexture("Graphics/putin_square.png");
+    player.sprite = LoadTexture("Graphics/small_putin_square.png");
     // asteroid.position = {(float)(GetScreenWidth() )/2, (float)(GetScreenHeight() )/2};
     float halfW = player.sprite.width/2;
     float halfH = player.sprite.height/2;
@@ -147,7 +147,13 @@ void Manager::Draw()
                 //     // std::cout << pixel.position.x << pixel.position.y << std::endl;
                 // }
             }
+            for(auto& cell : ast.cells)
+            
+            {
+                // DrawRectangleRec(cell.GetCollider(), WHITE);
+            }
         }
+        DrawRectangleRec(player.GetCollider(), PURPLE);
         // asteroid.Draw();
         player.Draw();
 
@@ -263,18 +269,6 @@ void Manager::Update()
     // }
 
 
-
-    GenerateAsteroidsGrid({playerScreenPos.x, playerScreenPos.y});
-    GenerateAsteroidsGrid({-1+playerScreenPos.x, playerScreenPos.y});
-    GenerateAsteroidsGrid({playerScreenPos.x, -1+playerScreenPos.y});
-    GenerateAsteroidsGrid({-1+playerScreenPos.x, -1+playerScreenPos.y});
-    GenerateAsteroidsGrid({1+playerScreenPos.x, -1+playerScreenPos.y});
-    GenerateAsteroidsGrid({1+playerScreenPos.x, playerScreenPos.y});
-    GenerateAsteroidsGrid({1+playerScreenPos.x, 1+playerScreenPos.y});
-    GenerateAsteroidsGrid({-1+playerScreenPos.x, 1+playerScreenPos.y});
-    GenerateAsteroidsGrid({-1+playerScreenPos.x, playerScreenPos.y});
-    GenerateAsteroidsGrid({playerScreenPos.x, 1+playerScreenPos.y});
-
     for(auto& ast : field)
     {
         if(ast.isActiveAndEnabled)
@@ -295,15 +289,35 @@ void Manager::Update()
                         // break;
                     }
                 }
+                if(cell.isActiveAndEnabled)
+                {
+                    //player collision detection
+                    if(CheckCollisionRecs({player.GetCollider().x + player.velocity.x / 60, player.GetCollider().y + player.velocity.y / 60, player.GetCollider().width, player.GetCollider().height}, cell.GetCollider()))//player collides with a tile next frame
+                    {
+                        Vector2 deltaVector = {player.GetCollider().x + player.velocity.x / 60 - cell.position.x, player.GetCollider().y + player.velocity.y / 60 - cell.position.y};// delta vector between player and tile
+                        // CheckCollisionRec
+                        // std::cout << "Collided with player" << std::endl;
+                        player.transform.position.x -= player.velocity.x / 60;
+                        player.transform.position.y -= player.velocity.y / 60;
 
-                //player collision detection
-                if(CheckCollisionRecs(player.GetCollider(), cell.GetCollider()))
+                        // if(abs(deltaVector.x) > abs(deltaVector.y))//collided with right/left side of player and left/right side of tile
+                        // {
+                        //     std::cout << "Reflect x" << std::endl;
+                        //     player.velocity.x *= -player.bounce;// reflect x velocity
+                        // }
+                        // else if(abs(deltaVector.y) > abs(deltaVector.x))//collided with top/bottom side of player and top/bottom side of tile
+                        // {
+                        //     std::cout << "Reflect y" << std::endl;
+                        //     player.velocity.y *= -player.bounce;//reflect y velocity
+                        // }
+                        player.velocity.x *= -player.bounce;
+                        player.velocity.y *= -player.bounce;
+                    }
+                }
             }
             ast.Update();
         }
     }
-
-
 
     float halfW = player.sprite.width/2;
     float halfH = player.sprite.height/2;
@@ -311,6 +325,21 @@ void Manager::Update()
     player.Update();
 
     Vector2 playerScreenPos = {floorf(player.transform.position.x / GetScreenWidth()), floorf(player.transform.position.y / GetScreenWidth())};
+
+
+    GenerateAsteroidsGrid({playerScreenPos.x, playerScreenPos.y});
+    GenerateAsteroidsGrid({-1+playerScreenPos.x, playerScreenPos.y});
+    GenerateAsteroidsGrid({playerScreenPos.x, -1+playerScreenPos.y});
+    GenerateAsteroidsGrid({-1+playerScreenPos.x, -1+playerScreenPos.y});
+    GenerateAsteroidsGrid({1+playerScreenPos.x, -1+playerScreenPos.y});
+    GenerateAsteroidsGrid({1+playerScreenPos.x, playerScreenPos.y});
+    GenerateAsteroidsGrid({1+playerScreenPos.x, 1+playerScreenPos.y});
+    GenerateAsteroidsGrid({-1+playerScreenPos.x, 1+playerScreenPos.y});
+    GenerateAsteroidsGrid({-1+playerScreenPos.x, playerScreenPos.y});
+    GenerateAsteroidsGrid({playerScreenPos.x, 1+playerScreenPos.y});
+
+
+
 
     // asteroid.Update();
     camera.zoom = expf(logf(camera.zoom) + ((float)GetMouseWheelMove()*0.1f));

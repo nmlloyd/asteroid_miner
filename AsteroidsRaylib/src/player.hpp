@@ -8,4 +8,5 @@ class Player : public BaseCharacter
         Player();
         Player(Transform2D _transform, Texture2D _sprite);
         float speed = 9;
+        double bounce = 0.2;
 };
