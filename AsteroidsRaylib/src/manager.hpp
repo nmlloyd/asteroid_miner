@@ -15,6 +15,7 @@ class Manager
         void Update();
     private:
         // Asteroid asteroid;
+        bool showDebug = false;
         Mouse mouse;
         Camera2D camera;
         Player player;

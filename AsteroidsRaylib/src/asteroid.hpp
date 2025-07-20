@@ -15,7 +15,7 @@ class Asteroid
         void Draw();
         Vector2 WorldToGrid(Vector2 pixelCoords);
         Vector2 GridToWorld(Vector2 gridCoords);
-        void UpdateLighting(std::vector<Light> additionalLights);
+        // void UpdateLighting(std::vector<Light> additionalLights);
         Vector2 position;
         Vector2 gridPosition;
         unsigned int minNodes = 2;

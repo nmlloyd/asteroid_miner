@@ -1,6 +1,9 @@
 #include "asteroid.hpp"
 #include <iostream>
 #include <cmath>
+#include <algorithm>
+#include "gameobject.hpp"
+
 using namespace std;
 Asteroid::Asteroid(Vector2 pos)
 {
@@ -48,12 +51,12 @@ void Asteroid::Draw()
             // UpdateLighting({});
         }
     }
-    for(auto& light : edgeLights)
-    {
-        DrawRectangle(light.position.x + position.x, light.position.y + position.y, 24, 24, YELLOW);
-    }
+    // for(auto& light : edgeLights)
+    // {
+    //     DrawRectangle(light.position.x + position.x, light.position.y + position.y, 24, 24, YELLOW);
+    // }
     // BeginBlendMode(BLEND_MULTIPLIED);
-        // DrawTextureEx(shading, {topLeftCorner.x + localCenterFirst.x, topLeftCorner.y + localCenterFirst.y}, 0.0f, 4, WHITE);
+    //     DrawTextureEx(shading, {topLeftCorner.x + localCenterFirst.x, topLeftCorner.y + localCenterFirst.y}, 0.0f, 4, WHITE);
     // EndBlendMode();
     // for(auto& cell : darkCells100)
     // {
@@ -248,6 +251,8 @@ void Asteroid::CreateRandomAsteroid(Vector2 centerMain, int maxAsteroids, int mi
         }
         randomRadiusPrev = randomRadius;
     }
+    // std::sort(cells.begin(), cells.end()); // sort the cells vector
+    // cells.erase(std::unique(cells.begin(), cells.end()), cells.end()); // remove duped cells
 
     // for(auto& cell : cells)
     // {

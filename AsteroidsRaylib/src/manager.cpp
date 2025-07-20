@@ -70,7 +70,7 @@ void Manager::Start()
     player = Player();
     player.transform = {{(float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, 0.0f, 1.0f};
     player.transform.position = {0, 0};
-    player.sprite = LoadTexture("Graphics/small_putin_square.png");
+    player.sprite = LoadTexture("Graphics/player_putin_2x4.png");
     // asteroid.position = {(float)(GetScreenWidth() )/2, (float)(GetScreenHeight() )/2};
     float halfW = player.sprite.width/2;
     float halfH = player.sprite.height/2;
@@ -147,13 +147,17 @@ void Manager::Draw()
                 //     // std::cout << pixel.position.x << pixel.position.y << std::endl;
                 // }
             }
-            for(auto& cell : ast.cells)
-            
+            if(showDebug)
             {
-                // DrawRectangleRec(cell.GetCollider(), WHITE);
+                for(auto& cell : ast.cells)
+                
+                {
+                    DrawRectangleRec(cell.GetCollider(), WHITE);
+                }
             }
         }
-        DrawRectangleRec(player.GetCollider(), PURPLE);
+        if(showDebug)
+            DrawRectangleRec(player.GetCollider(), PURPLE);
         // asteroid.Draw();
         player.Draw();
 
@@ -183,6 +187,7 @@ void Manager::Draw()
 void Manager::Update()
 {
     bool isFreeCam = false;
+    bool reflectedThisFrame = false;
 
     mouse.Update();
 
@@ -242,6 +247,12 @@ void Manager::Update()
         //     player.velocity.y = player.speed;
         // }
     }
+
+    if(IsKeyPressed(KEY_F3))
+    {
+        showDebug = !showDebug;//toggle debug
+    }
+
     // double magnitude = sqrt(pow(player.velocity.x, 2) + pow(player.velocity.y, 2));
     // player.velocity.x /= magnitude;
     // player.velocity.y /= magnitude;
@@ -283,35 +294,80 @@ void Manager::Update()
                     // std::cout << cell.GetCollider().x << ", " << cell.GetCollider().y << ", " << cell.GetCollider().width << ", " << cell.GetCollider().height << std::endl;
                     if(CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), (cell.GetCollider())))
                     {
-                        std::cout<<"Rectangle:"<<"X: "<<cell.GetCollider().x<<"Y: "<<cell.GetCollider().y<<"W: "<<cell.GetCollider().width<<"H: "<<cell.GetCollider().height<<std::endl;
+                        // std::cout<<"Rectangle:"<<"X: "<<cell.GetCollider().x<<"Y: "<<cell.GetCollider().y<<"W: "<<cell.GetCollider().width<<"H: "<<cell.GetCollider().height<<std::endl;
                         float mineSpeed = 2.0f;
                         cell.step += mineSpeed;
                         // break;
                     }
                 }
-                if(cell.isActiveAndEnabled)
+                if (cell.isActiveAndEnabled && !reflectedThisFrame)
                 {
-                    //player collision detection
-                    if(CheckCollisionRecs({player.GetCollider().x + player.velocity.x / 60, player.GetCollider().y + player.velocity.y / 60, player.GetCollider().width, player.GetCollider().height}, cell.GetCollider()))//player collides with a tile next frame
-                    {
-                        Vector2 deltaVector = {player.GetCollider().x + player.velocity.x / 60 - cell.position.x, player.GetCollider().y + player.velocity.y / 60 - cell.position.y};// delta vector between player and tile
-                        // CheckCollisionRec
-                        // std::cout << "Collided with player" << std::endl;
-                        player.transform.position.x -= player.velocity.x / 60;
-                        player.transform.position.y -= player.velocity.y / 60;
+                    // Predict player's next position (next frame collider)
+                    Rectangle nextPlayerCollider = {
+                        player.GetCollider().x + player.velocity.x / 60.0f,
+                        player.GetCollider().y + player.velocity.y / 60.0f,
+                        player.GetCollider().width,
+                        player.GetCollider().height
+                    };
 
-                        // if(abs(deltaVector.x) > abs(deltaVector.y))//collided with right/left side of player and left/right side of tile
-                        // {
-                        //     std::cout << "Reflect x" << std::endl;
-                        //     player.velocity.x *= -player.bounce;// reflect x velocity
-                        // }
-                        // else if(abs(deltaVector.y) > abs(deltaVector.x))//collided with top/bottom side of player and top/bottom side of tile
-                        // {
-                        //     std::cout << "Reflect y" << std::endl;
-                        //     player.velocity.y *= -player.bounce;//reflect y velocity
-                        // }
-                        player.velocity.x *= -player.bounce;
-                        player.velocity.y *= -player.bounce;
+                    Rectangle tileCollider = cell.GetCollider();
+
+                    if (CheckCollisionRecs(nextPlayerCollider, tileCollider))
+                    {
+                        // Store previous collider before applying velocity
+                        Rectangle prevPlayerCollider = player.GetCollider();
+
+                        // Compute centers
+                        float prevCenterX = prevPlayerCollider.x + prevPlayerCollider.width / 2.0f;
+                        float prevCenterY = prevPlayerCollider.y + prevPlayerCollider.height / 2.0f;
+                        float tileCenterX = tileCollider.x + tileCollider.width / 2.0f;
+                        float tileCenterY = tileCollider.y + tileCollider.height / 2.0f;
+
+                        // Deltas
+                        float dx = prevCenterX - tileCenterX;
+                        float dy = prevCenterY - tileCenterY;
+
+                        float combinedHalfWidths = (prevPlayerCollider.width + tileCollider.width) / 2.0f;
+                        float combinedHalfHeights = (prevPlayerCollider.height + tileCollider.height) / 2.0f;
+
+                        float crossWidth = combinedHalfWidths * dy;
+                        float crossHeight = combinedHalfHeights * dx;
+
+                        // Undo movement to avoid pushing inside
+                        player.transform.position.x -= player.velocity.x / 60.0f;
+                        player.transform.position.y -= player.velocity.y / 60.0f;
+
+                        // Determine collision side
+                        if (crossWidth > crossHeight)
+                        {
+                            if (crossWidth > -crossHeight)
+                            {
+                                // std::cout << "Collision: TOP\n";
+                                player.velocity.y = abs(player.bounce * player.velocity.y);
+                                reflectedThisFrame = true;
+                            }
+                            else
+                            {
+                                // std::cout << "Collision: RIGHT\n";
+                                player.velocity.x = -abs(player.bounce * player.velocity.x);
+                                reflectedThisFrame = true;
+                            }
+                        }
+                        else
+                        {
+                            if (crossWidth > -crossHeight)
+                            {
+                                // std::cout << "Collision: LEFT\n";
+                                player.velocity.x = abs(player.bounce * player.velocity.x);
+                                reflectedThisFrame = true;
+                            }
+                            else
+                            {
+                                // std::cout << "Collision: BOTTOM\n";
+                                player.velocity.y = -abs(player.bounce * player.velocity.y);
+                                reflectedThisFrame = true;
+                            }
+                        }
                     }
                 }
             }
