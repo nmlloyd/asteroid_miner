@@ -1,7 +1,8 @@
 #include "manager.hpp"
 #include <iostream>
 #include <cmath>
-
+#include <fstream> 
+using namespace std;
 Manager::Manager()
 {
     
@@ -64,9 +65,68 @@ void Manager::GenerateAsteroidsGrid(Vector2 positionInScreenWidths)
     }
 }
 
+vector<Cell> Manager::LoadStructureFromFile(std::string fileName)
+{
+    int w = 0;
+    int h = 0;
+    Vector2 pos = {48, 48};
+    int outline = 1;
+    int y = 0;//line counter
+    vector<Cell> cells {};
+
+    std::string line;
+    std::ifstream fptr("Assets/" + fileName);
+    std::getline(fptr, line);
+    while (std::getline(fptr, line)) //iterate through each line
+    {
+        if(line[0] == 'm')//dimensions
+        {
+            w = line[1] - '0';
+            h = line[2] - '0';
+            // std::cout << "Width: " << w << "  Height: " << h << std::endl;
+        }
+        else if(line[0] == 'o')//outline ID
+        {
+            outline = line[1] - '0';
+            // std::cout << "Outline ID: " << outline << std::endl;
+        }
+        else if(line[0] == 'x')//position x
+        {
+            pos.x *= (line[1] - '0');
+            // std::cout << "Outline ID: " << outline << std::endl;
+        }
+        else if(line[0] == 'y')//position y
+        {
+            pos.y *= (line[1] - '0');
+            // std::cout << "Outline ID: " << outline << std::endl;
+        }
+        else //regular line
+        {
+            for(int i = 0; i < line.size(); i++)
+            {
+                Cell cell = Cell();
+                cell.outlineId = outline;//set outline
+                if(line[i] != ' ' && line[i] > 47)//is an ID
+                {
+                    cell.id = line[i] - '0' + 1;//set cell ID
+                    cell.position = {(float)(i) * 48 + pos.x, (float)y * 48 + pos.y};//set position based on the lines of the file and the position of the characters
+                    cells.push_back(cell);
+                }
+                // else //empty space
+                // {
+
+                // }
+            }
+            y++;
+            // std::cout << line << std::endl;
+        }
+    }
+    return cells;
+}
 
 void Manager::Start()
 {
+
     player = Player();
     player.transform = {{(float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, 0.0f, 1.0f};
     player.transform.position = {0, 0};
@@ -96,6 +156,37 @@ void Manager::Start()
             star.player = player;
             stars.push_back(star);
         }
+    }
+    if(scene == 1)//load meteorite and spaceship 
+    {
+        player.bounce = 0;
+        Asteroid meteorite = Asteroid();
+        Asteroid asteroid = Asteroid();
+        Asteroid background = Asteroid();
+        meteorite.position = {0,0};
+        asteroid.position = {0,0};
+        background.position = {0,0};
+        meteorite.gridPosition = {0,0};
+        asteroid.gridPosition = {0,0};
+        background.gridPosition = {0,0};
+        meteorite.topLeftCorner = {-(float)GetScreenWidth()/2, -(float)GetScreenWidth()/2};
+        asteroid.topLeftCorner = {-(float)GetScreenWidth()/2, -(float)GetScreenWidth()/2};
+        background.topLeftCorner = {-(float)GetScreenWidth()/2, -(float)GetScreenWidth()/2};
+        meteorite.cells = LoadStructureFromFile("meteorite.grid");
+        asteroid.cells = LoadStructureFromFile("spaceship.grid");
+        background.cells = LoadStructureFromFile("spaceship.bkg");
+        for(auto& cell : background.cells)
+        {
+            cell.allowCollisions = false;
+            cell.drawOutline = true;
+        }
+        field.push_back(background);
+        field.push_back(asteroid);
+        field.push_back(meteorite);
+    }
+    else
+    {
+        player.bounce = 0.2;
     }
     
 }
@@ -248,9 +339,16 @@ void Manager::Update()
         // }
     }
 
-    if(IsKeyPressed(KEY_F3))
+    if(IsKeyPressed(KEY_F1))
     {
         showDebug = !showDebug;//toggle debug
+    }
+    if(IsKeyPressed(KEY_F2))//debug switch scenes
+    {
+        if(scene == 1)
+            ChangeScene(0);//asteroid field
+        if(scene == 0)
+            ChangeScene(1);//starship
     }
 
     // double magnitude = sqrt(pow(player.velocity.x, 2) + pow(player.velocity.y, 2));
@@ -300,7 +398,7 @@ void Manager::Update()
                         // break;
                     }
                 }
-                if (cell.isActiveAndEnabled && !reflectedThisFrame)
+                if (cell.allowCollisions && cell.isActiveAndEnabled && !reflectedThisFrame)
                 {
                     // Predict player's next position (next frame collider)
                     Rectangle nextPlayerCollider = {
@@ -383,16 +481,23 @@ void Manager::Update()
     Vector2 playerScreenPos = {floorf(player.transform.position.x / GetScreenWidth()), floorf(player.transform.position.y / GetScreenWidth())};
 
 
-    GenerateAsteroidsGrid({playerScreenPos.x, playerScreenPos.y});
-    GenerateAsteroidsGrid({-1+playerScreenPos.x, playerScreenPos.y});
-    GenerateAsteroidsGrid({playerScreenPos.x, -1+playerScreenPos.y});
-    GenerateAsteroidsGrid({-1+playerScreenPos.x, -1+playerScreenPos.y});
-    GenerateAsteroidsGrid({1+playerScreenPos.x, -1+playerScreenPos.y});
-    GenerateAsteroidsGrid({1+playerScreenPos.x, playerScreenPos.y});
-    GenerateAsteroidsGrid({1+playerScreenPos.x, 1+playerScreenPos.y});
-    GenerateAsteroidsGrid({-1+playerScreenPos.x, 1+playerScreenPos.y});
-    GenerateAsteroidsGrid({-1+playerScreenPos.x, playerScreenPos.y});
-    GenerateAsteroidsGrid({playerScreenPos.x, 1+playerScreenPos.y});
+    if(scene == 0)
+    {
+        GenerateAsteroidsGrid({playerScreenPos.x, playerScreenPos.y});
+        GenerateAsteroidsGrid({-1+playerScreenPos.x, playerScreenPos.y});
+        GenerateAsteroidsGrid({playerScreenPos.x, -1+playerScreenPos.y});
+        GenerateAsteroidsGrid({-1+playerScreenPos.x, -1+playerScreenPos.y});
+        GenerateAsteroidsGrid({1+playerScreenPos.x, -1+playerScreenPos.y});
+        GenerateAsteroidsGrid({1+playerScreenPos.x, playerScreenPos.y});
+        GenerateAsteroidsGrid({1+playerScreenPos.x, 1+playerScreenPos.y});
+        GenerateAsteroidsGrid({-1+playerScreenPos.x, 1+playerScreenPos.y});
+        GenerateAsteroidsGrid({-1+playerScreenPos.x, playerScreenPos.y});
+        GenerateAsteroidsGrid({playerScreenPos.x, 1+playerScreenPos.y});
+    }
+    // else if (scene == 1)
+    // {
+    //     LoadStructureFromFile("test.grid");
+    // }
 
 
 
@@ -431,4 +536,9 @@ float Manager::Clamp(float min, float max, float n)
 double Manager::Distance(Vector2 p1, Vector2 p2)
 {
     return std::sqrt(std::pow(p2.x-p1.x, 2) + std::pow(p2.y-p1.y, 2));
+}
+void Manager::ChangeScene(int sceneId)
+{
+    scene = sceneId;//set scene
+
 }

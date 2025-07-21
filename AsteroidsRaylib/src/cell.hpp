@@ -12,10 +12,12 @@ class Cell
         Rectangle GetCollider();
         Vector2 position;//local position, relative to asteroid
         int id = 2;
+        int outlineId = 1;
         float step = -1;
         bool isActiveAndEnabled = true;
         bool drawOutline = true;
         bool isOnEdge = true;
-        static Texture2D unitTex[10];
+        bool allowCollisions = true;
+        static Texture2D unitTex[16];
         Vector2 relativeTo;
 };

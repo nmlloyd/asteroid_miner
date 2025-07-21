@@ -3,7 +3,7 @@
 #include <iostream>
 
 
-const int texs = 10;
+const int texs = 16;
 Texture2D Cell::unitTex[texs] = {};
 Color white = {150, 150, 150, 255};
 Cell::Cell()
@@ -44,13 +44,19 @@ Cell::Cell()
                     // unitTex[i] = LoadTexture("Graphics/meteor_tile_leftex.png");
                     break;
                 case 7:
-                    unitTex[i] = LoadTexture("Graphics/dark_full.png");
+                    unitTex[i] = LoadTexture("Graphics/ship_hull_outline_3.png");
                     break;
                 case 8:
-                    unitTex[i] = LoadTexture("Graphics/dark_50perc.png");
+                    unitTex[i] = LoadTexture("Graphics/ship_hull_center.png");
                     break;
                 case 9:
                     unitTex[i] = LoadTexture("Graphics/dark_25perc.png");
+                    break;
+                case 10:
+                    unitTex[i] = LoadTexture("Graphics/empty_center.png");
+                    break;
+                case 11:
+                    unitTex[i] = LoadTexture("Graphics/ship_hull_background.png");//outline
                     break;
             }
         }
@@ -110,7 +116,20 @@ int Cell::Draw()
 void Cell::DrawOutlines()
 {
     if(isActiveAndEnabled && drawOutline)
-        DrawTextureEx(unitTex[0], {position.x + relativeTo.x - 8, position.y + relativeTo.y - 8}, 0, 4, white);
+    {
+        switch(outlineId)
+        {
+            case 1:
+                DrawTextureEx(unitTex[0], {position.x + relativeTo.x - 8, position.y + relativeTo.y - 8}, 0, 4, white);
+                break;
+            case 2:
+                DrawTextureEx(unitTex[7], {position.x + relativeTo.x - 8, position.y + relativeTo.y - 8}, 0, 4, white);
+                break;
+            case 3:
+                DrawTextureEx(unitTex[11], {position.x + relativeTo.x - 8, position.y + relativeTo.y - 8}, 0, 4, white);
+                break;
+        }
+    }
 }
 Vector2 Cell::GetUnitSize()
 {

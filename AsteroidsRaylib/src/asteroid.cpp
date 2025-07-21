@@ -5,13 +5,18 @@
 #include "gameobject.hpp"
 
 using namespace std;
+Asteroid::Asteroid()
+{
+    isActiveAndEnabled = true;
+}
 Asteroid::Asteroid(Vector2 pos)
 {
     // Vector2 center = {-8, -8};
     isActiveAndEnabled = true;
     position = pos;
     topLeftCorner = {position.x - (float)GetScreenWidth()/2, position.y - (float)GetScreenWidth()/2};
-    CreateRandomAsteroid(position, GetRandomValue(minNodes, maxNodes), minNodeRadius, maxNodeRadius);
+    if(!isPregenerated)//only randomize non-pre-generated asteroids
+        CreateRandomAsteroid(position, GetRandomValue(minNodes, maxNodes), minNodeRadius, maxNodeRadius);
     // Vector2 centerMain = {-8, -8};
     // vector<Vector2> vecs = Generate(GetRandomValue(1, 4)*2 + 1);
     // for(int i = 0; i < vecs.size(); i++)
@@ -204,6 +209,8 @@ void Asteroid::CreateRandomAsteroid(Vector2 centerMain, int maxAsteroids, int mi
             if(i == 0)
                 localCenterFirst = {cell.GetUnitSize().x * localCenter.x, cell.GetUnitSize().y * localCenter.y};
             cell.id = GetRandomValue(2, 3);//random center
+            // cell.id = 9;
+            // cell.outlineId = 2;
             int rnd = GetRandomValue(0, 32);
             if(rnd == 7)
             {

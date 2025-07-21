@@ -62,6 +62,8 @@
 		"*.m": "cpp",
 		"algorithm": "cpp",
 		"optional": "cpp",
-		"xtree": "cpp"
+		"xtree": "cpp",
+		"fstream": "cpp",
+		"set": "cpp"
 	}
 }

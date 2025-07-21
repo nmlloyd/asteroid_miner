@@ -9,6 +9,7 @@
 class Asteroid
 {
     public:
+        Asteroid();
         Asteroid(Vector2 pos);
         ~Asteroid();
         void Update();
@@ -16,6 +17,7 @@ class Asteroid
         Vector2 WorldToGrid(Vector2 pixelCoords);
         Vector2 GridToWorld(Vector2 gridCoords);
         // void UpdateLighting(std::vector<Light> additionalLights);
+        bool isPregenerated = false;
         Vector2 position;
         Vector2 gridPosition;
         unsigned int minNodes = 2;
