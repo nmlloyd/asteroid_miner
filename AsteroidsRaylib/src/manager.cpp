@@ -108,8 +108,14 @@ vector<Cell> Manager::LoadStructureFromFile(std::string fileName)
                 cell.outlineId = outline;//set outline
                 if(line[i] != ' ' && line[i] > 47)//is an ID
                 {
+                    // cout<<"Index: "<< i<<endl;
+                    // if(line[i] - '0' + 1 == 15)//is cell
+                    // {
+                    //     cout<<":("<<endl;
+                    // }
                     cell.id = line[i] - '0' + 1;//set cell ID
                     cell.position = {(float)(i) * 48 + pos.x, (float)y * 48 + pos.y};//set position based on the lines of the file and the position of the characters
+                    cell.allowBreaking = false;
                     cells.push_back(cell);
                 }
                 // else //empty space
@@ -127,6 +133,7 @@ vector<Cell> Manager::LoadStructureFromFile(std::string fileName)
 void Manager::Start()
 {
 
+    font = LoadFont("Font/monogram.ttf");
     player = Player();
     player.transform = {{(float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, 0.0f, 1.0f};
     player.transform.position = {0, 0};
@@ -134,11 +141,11 @@ void Manager::Start()
     // asteroid.position = {(float)(GetScreenWidth() )/2, (float)(GetScreenHeight() )/2};
     float halfW = player.sprite.width/2;
     float halfH = player.sprite.height/2;
-    camera = {0};
-    camera.target = { player.transform.position.x + halfW, player.transform.position.y + halfH };
-    camera.offset = { GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
-    camera.rotation = 0.0f;
-    camera.zoom = 1.0f;
+    camera = {0};//create new camera
+    camera.target = { player.transform.position.x + halfW, player.transform.position.y + halfH };//set camera's position to the player
+    camera.offset = { GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };//center camera on player
+    camera.rotation = 0.0f;//make sure the camera doesnt rotate
+    camera.zoom = 1.0f;//set starting zoom
 
     int rnd = 60;
     float gridX = 123.0f;
@@ -157,37 +164,18 @@ void Manager::Start()
             stars.push_back(star);
         }
     }
-    if(scene == 1)//load meteorite and spaceship 
+    if(scene == Scenes::Base)//load meteorite and spaceship 
     {
-        player.bounce = 0;
-        Asteroid meteorite = Asteroid();
-        Asteroid asteroid = Asteroid();
-        Asteroid background = Asteroid();
-        meteorite.position = {0,0};
-        asteroid.position = {0,0};
-        background.position = {0,0};
-        meteorite.gridPosition = {0,0};
-        asteroid.gridPosition = {0,0};
-        background.gridPosition = {0,0};
-        meteorite.topLeftCorner = {-(float)GetScreenWidth()/2, -(float)GetScreenWidth()/2};
-        asteroid.topLeftCorner = {-(float)GetScreenWidth()/2, -(float)GetScreenWidth()/2};
-        background.topLeftCorner = {-(float)GetScreenWidth()/2, -(float)GetScreenWidth()/2};
-        meteorite.cells = LoadStructureFromFile("meteorite.grid");
-        asteroid.cells = LoadStructureFromFile("spaceship.grid");
-        background.cells = LoadStructureFromFile("spaceship.bkg");
-        for(auto& cell : background.cells)
-        {
-            cell.allowCollisions = false;
-            cell.drawOutline = true;
-        }
-        field.push_back(background);
-        field.push_back(asteroid);
-        field.push_back(meteorite);
+        LoadSceneBase();
     }
     else
     {
         player.bounce = 0.2;
     }
+
+
+    SetRandomMission();//create new random mission
+    objective = Objective::GoToComputer;
     
 }
 void Manager::DestroyInactiveStars()
@@ -221,7 +209,6 @@ void Manager::Draw()
         //         stars.push_back(vec);
         //     }
         // }
-    
         for(auto& ast : field)
         {
             if(sqrt(pow(ast.position.x - player.transform.position.x, 2) + pow(ast.position.y - player.transform.position.y, 2)) >= GetScreenWidth()*4)
@@ -241,9 +228,9 @@ void Manager::Draw()
             if(showDebug)
             {
                 for(auto& cell : ast.cells)
-                
                 {
-                    DrawRectangleRec(cell.GetCollider(), WHITE);
+                    // cout << cell.isActiveAndEnabled << endl;
+                    DrawRectangleRec(cell.GetCollider(), WHITE);//draw debug colliders
                 }
             }
         }
@@ -269,8 +256,25 @@ void Manager::Draw()
         //     // DrawTexture(shading, );
         // EndBlendMode();
     EndMode2D();
-    
-    DrawRectangle(mouse.position.x, mouse.position.y, 10, 10, RED);
+    switch (objective)//draw objective in top left
+    {
+        case Objective::BeamDown:
+            DrawTextEx(font, "Current Objective:\nBeam down to the Asteroid Belt", {10, 10}, 30, 3, WHITE);
+            break;
+        case Objective::CompleteMission:
+            switch(mission.oreToMine)
+            {
+                case OreTile::Putin:
+                    string str = "Current Objective:\nFind and Collect " + to_string(mission.quantity) + " Putonium";
+                    DrawTextEx(font, str.c_str(), {10, 10}, 30, 3, WHITE);
+                    break;
+            }
+            break;
+        case Objective::GoToComputer:
+            DrawTextEx(font, "Current Objective:\nGo to the Computer to start the next mission", {10, 10}, 30, 3, WHITE);
+            break;
+    }
+    DrawRectangle(mouse.position.x, mouse.position.y, 10, 10, RED);//Draw mouse cursor
     // Cell cell = Cell();
     // cell.position = {1280, 800};
     // cell.Draw();
@@ -345,10 +349,14 @@ void Manager::Update()
     }
     if(IsKeyPressed(KEY_F2))//debug switch scenes
     {
-        if(scene == 1)
-            ChangeScene(0);//asteroid field
-        if(scene == 0)
-            ChangeScene(1);//starship
+        if(scene == Scenes::Base)
+            ChangeScene(Scenes::Field);//asteroid field
+        else if(scene == Scenes::Field)//spaceship
+        {
+            ChangeScene(Scenes::Base);
+            // field.clear();
+        }
+            //ChangeScene(1);//starship
     }
 
     // double magnitude = sqrt(pow(player.velocity.x, 2) + pow(player.velocity.y, 2));
@@ -392,10 +400,23 @@ void Manager::Update()
                     // std::cout << cell.GetCollider().x << ", " << cell.GetCollider().y << ", " << cell.GetCollider().width << ", " << cell.GetCollider().height << std::endl;
                     if(CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), (cell.GetCollider())))
                     {
-                        // std::cout<<"Rectangle:"<<"X: "<<cell.GetCollider().x<<"Y: "<<cell.GetCollider().y<<"W: "<<cell.GetCollider().width<<"H: "<<cell.GetCollider().height<<std::endl;
-                        float mineSpeed = 2.0f;
-                        cell.step += mineSpeed;
-                        // break;
+                        if(cell.allowBreaking)
+                        {
+                            // std::cout<<"Rectangle:"<<"X: "<<cell.GetCollider().x<<"Y: "<<cell.GetCollider().y<<"W: "<<cell.GetCollider().width<<"H: "<<cell.GetCollider().height<<std::endl;
+                            float mineSpeed = 1.0f;
+                            cell.step += mineSpeed;
+                            // break;
+                        }
+                        else if(cell.id == 14)//check if is computer
+                        {
+                            cout << "Toggled computer screen" << endl;
+                            // ToggleComputerScreen();
+                        }
+                        else if(cell.id == 16)//check if is teleporter button
+                        {
+                            // field.clear();
+                            ChangeScene(Scenes::Field);//change scene to asteroids
+                        }
                     }
                 }
                 if (cell.allowCollisions && cell.isActiveAndEnabled && !reflectedThisFrame)
@@ -481,18 +502,9 @@ void Manager::Update()
     Vector2 playerScreenPos = {floorf(player.transform.position.x / GetScreenWidth()), floorf(player.transform.position.y / GetScreenWidth())};
 
 
-    if(scene == 0)
+    if(scene == Scenes::Field)
     {
-        GenerateAsteroidsGrid({playerScreenPos.x, playerScreenPos.y});
-        GenerateAsteroidsGrid({-1+playerScreenPos.x, playerScreenPos.y});
-        GenerateAsteroidsGrid({playerScreenPos.x, -1+playerScreenPos.y});
-        GenerateAsteroidsGrid({-1+playerScreenPos.x, -1+playerScreenPos.y});
-        GenerateAsteroidsGrid({1+playerScreenPos.x, -1+playerScreenPos.y});
-        GenerateAsteroidsGrid({1+playerScreenPos.x, playerScreenPos.y});
-        GenerateAsteroidsGrid({1+playerScreenPos.x, 1+playerScreenPos.y});
-        GenerateAsteroidsGrid({-1+playerScreenPos.x, 1+playerScreenPos.y});
-        GenerateAsteroidsGrid({-1+playerScreenPos.x, playerScreenPos.y});
-        GenerateAsteroidsGrid({playerScreenPos.x, 1+playerScreenPos.y});
+        LoadSceneField(playerScreenPos);
     }
     // else if (scene == 1)
     // {
@@ -513,6 +525,12 @@ void Manager::Update()
     // }
 
     // lastPlayerScreenPos = playerScreenPos;
+
+    // for(auto& ast : field){
+    //     cout <<"X: "<< ast.gridPosition.x <<"Y: " <<ast.gridPosition.y << endl;
+    //     cout <<"Cell size: " << ast.cells.size()<<endl;
+    //     cout <<"Texture ID: "<< ast.cells[10].unitTex->id<<endl;
+    // }
 }
 
 float Manager::Clamp01(float n)
@@ -537,8 +555,126 @@ double Manager::Distance(Vector2 p1, Vector2 p2)
 {
     return std::sqrt(std::pow(p2.x-p1.x, 2) + std::pow(p2.y-p1.y, 2));
 }
-void Manager::ChangeScene(int sceneId)
+void Manager::ChangeScene(Scenes sceneId)
 {
+    if(sceneId == Scenes::Field)//asteroids
+    {
+        field.clear();//clear vector
+        player.transform.position = {0, 0};//reset pos
+        player.bounce = 0.2;
+        scene = Scenes::Field;
+    }
+    else if(sceneId == Scenes::Base)//spaceship
+    {
+        player.transform.position = {0, 0};
+        LoadSceneBase();
+        scene = Scenes::Base;
+    }
     scene = sceneId;//set scene
+}
 
+void Manager::LoadSceneBase()
+{
+    field.clear();
+    
+    player.bounce = 0;//make it so the player doesnt bounce in the spaceship
+    //declare structures
+    Asteroid meteorite = Asteroid();//meteorite
+    Asteroid spaceship = Asteroid();//spaceship
+    Asteroid background = Asteroid();//background tiles of spaceship
+    // Asteroid tele = Asteroid();//teleporter collision
+
+    //set positions
+    meteorite.position = {0,0};
+    spaceship.position = {0,0};
+    background.position = {0,0};
+    // tele.position = {0,0};
+
+    meteorite.gridPosition = {0,0};
+    spaceship.gridPosition = {0,1};
+    background.gridPosition = {1,0};
+    // tele.gridPosition = {1,1};
+
+    //set topLeftCorner in case of shading
+    meteorite.topLeftCorner = {-(float)GetScreenWidth()/2, -(float)GetScreenWidth()/2};
+    spaceship.topLeftCorner = {-(float)GetScreenWidth()/2, -(float)GetScreenWidth()/2};
+    background.topLeftCorner = {-(float)GetScreenWidth()/2, -(float)GetScreenWidth()/2};
+    // tele.topLeftCorner = {-(float)GetScreenWidth()/2, -(float)GetScreenWidth()/2};
+
+    //define structures
+    meteorite.cells = LoadStructureFromFile("meteorite.grid");
+    spaceship.cells = LoadStructureFromFile("spaceship.grid");
+    background.cells = LoadStructureFromFile("spaceship.bkg");
+    // tele.cells = LoadStructureFromFile("teleporter_floor.grid");
+
+    //make background not collide with anything and make all structures unbreakable
+    for(auto& cell : background.cells)
+    {
+        cell.allowBreaking = false;
+        cell.allowCollisions = false;
+        cell.drawOutline = true;
+        cell.color = WHITE;
+
+        // if(cell.id == 14)//if it is a computer then allow collision
+        // {
+        //     cell.allowCollisions = true;
+        // }
+    }
+    for(auto& cell : spaceship.cells)
+    {
+        cell.allowBreaking = false;
+        cell.color = WHITE;
+    }
+    // for(auto& cell : tele.cells)//make an invisible collider ofr the teleporter
+    // {
+    //     cell.allowBreaking = false;
+    //     cell.drawOutline = false;
+    //     cell.color = WHITE;
+    // }
+    for(auto& cell : meteorite.cells)
+    {
+        cell.allowBreaking = false;
+    }
+    //push all structures for drawing
+    field.push_back(background);
+    field.push_back(spaceship);
+    field.push_back(meteorite);
+}
+void Manager::LoadSceneField(Vector2 playerScreenPos)
+{
+    //generate grid of 9 asteroids around the player
+    GenerateAsteroidsGrid({playerScreenPos.x, playerScreenPos.y});
+    GenerateAsteroidsGrid({-1+playerScreenPos.x, playerScreenPos.y});
+    GenerateAsteroidsGrid({playerScreenPos.x, -1+playerScreenPos.y});
+    GenerateAsteroidsGrid({-1+playerScreenPos.x, -1+playerScreenPos.y});
+    GenerateAsteroidsGrid({1+playerScreenPos.x, -1+playerScreenPos.y});
+    GenerateAsteroidsGrid({1+playerScreenPos.x, playerScreenPos.y});
+    GenerateAsteroidsGrid({1+playerScreenPos.x, 1+playerScreenPos.y});
+    GenerateAsteroidsGrid({-1+playerScreenPos.x, 1+playerScreenPos.y});
+    GenerateAsteroidsGrid({-1+playerScreenPos.x, playerScreenPos.y});
+    GenerateAsteroidsGrid({playerScreenPos.x, 1+playerScreenPos.y});
+}
+
+void Manager::SetRandomMission()
+{
+    MiningMission randomMission;
+    int amountToMine = GetRandomValue(1, 10) * 10;
+    int randomOre = GetRandomValue(0, 2);
+    switch(randomOre)
+    {
+        case 0://putin random
+            randomMission.oreToMine = OreTile::Putin;
+            cout<<"Putin x" + to_string(amountToMine)<<endl;
+            break;
+        case 1://will add viridite later
+            randomMission.oreToMine = OreTile::Putin;
+            cout<<"Putin x" + to_string(amountToMine)<<endl;
+            break;
+        case 2://will add the blue ore later
+            randomMission.oreToMine = OreTile::Putin;
+            cout<<"Putin x" + to_string(amountToMine)<<endl;
+            break;
+    }
+    randomMission.quantity = amountToMine;
+    mission = randomMission;
 }

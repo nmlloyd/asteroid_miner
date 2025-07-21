@@ -10,6 +10,7 @@ class Asteroid
 {
     public:
         Asteroid();
+        Asteroid(const Asteroid &obj);
         Asteroid(Vector2 pos);
         ~Asteroid();
         void Update();

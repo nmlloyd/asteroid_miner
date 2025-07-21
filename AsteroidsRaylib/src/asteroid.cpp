@@ -9,6 +9,22 @@ Asteroid::Asteroid()
 {
     isActiveAndEnabled = true;
 }
+Asteroid::Asteroid(const Asteroid &obj)//copy constructor
+{
+    isPregenerated = obj.isPregenerated;
+    position = obj.position;
+    gridPosition = obj.gridPosition;
+    minNodes = obj.minNodes;
+    maxNodes = obj.maxNodes;
+    minNodeRadius = obj.minNodeRadius;
+    maxNodeRadius = obj.maxNodeRadius;
+    localCenterFirst = obj.localCenterFirst;
+    isActiveAndEnabled = obj.isActiveAndEnabled;
+    cells = obj.cells; 
+    edgeLights = obj.edgeLights; 
+    shading = obj.shading;
+    topLeftCorner = obj.topLeftCorner;
+}
 Asteroid::Asteroid(Vector2 pos)
 {
     // Vector2 center = {-8, -8};
@@ -51,10 +67,7 @@ void Asteroid::Draw()
     }
     for(auto& cell : cells)
     {
-        if(cell.Draw() == 1)//cell was disabled because of step
-        {
-            // UpdateLighting({});
-        }
+        cell.Draw();
     }
     // for(auto& light : edgeLights)
     // {

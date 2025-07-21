@@ -18,6 +18,8 @@ class Cell
         bool drawOutline = true;
         bool isOnEdge = true;
         bool allowCollisions = true;
-        static Texture2D unitTex[16];
+        bool allowBreaking = true;
+        Color color = {150, 150, 150, 255};
+        static Texture2D unitTex[32];
         Vector2 relativeTo;
 };

@@ -1,15 +1,14 @@
 #include "cell.hpp"
 #include <cmath>
 #include <iostream>
+#define NUM_OF_TEXTURES 32
 
 
-const int texs = 16;
-Texture2D Cell::unitTex[texs] = {};
-Color white = {150, 150, 150, 255};
+Texture2D Cell::unitTex[NUM_OF_TEXTURES] = {};
 Cell::Cell()
 {
     isActiveAndEnabled = true;
-    for(int i = 0; i < texs; i++)
+    for(int i = 0; i < NUM_OF_TEXTURES; i++)
     {
         if(unitTex[i].id == 0)
         {
@@ -58,6 +57,18 @@ Cell::Cell()
                 case 11:
                     unitTex[i] = LoadTexture("Graphics/ship_hull_background.png");//outline
                     break;
+                case 12:
+                    unitTex[i] = LoadTexture("Graphics/computer_off.png");//decoration
+                    break;
+                case 13:
+                    unitTex[i] = LoadTexture("Graphics/computer_on.png");//decoration
+                    break;
+                case 14:
+                    unitTex[i] = LoadTexture("Graphics/teleporter.png");//decoration
+                    break;
+                case 15:
+                    unitTex[i] = LoadTexture("Graphics/button.png");//decoration
+                    break;
             }
         }
     }
@@ -73,12 +84,12 @@ int Cell::Draw()
     {
         if(id != 4)
         {
-            DrawTextureEx(unitTex[id - 1], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, white);
+            DrawTextureEx(unitTex[id - 1], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
             if(step != -1)//do nothing if not breaking
             {
                 if(step <= 2)
                 {
-                    DrawTextureEx(unitTex[(int)(floorf(step)+4)], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, white);
+                    DrawTextureEx(unitTex[(int)(floorf(step)+4)], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
                     return 0;
                 }
                 else
@@ -92,12 +103,12 @@ int Cell::Draw()
         }
         else
         {
-            DrawTextureEx(unitTex[id - 1], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 0.5, white);
+            DrawTextureEx(unitTex[id - 1], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 0.5, color);
             if(step != -1)//do nothing if not breaking
             {
                 if(step <= 2)
                 {
-                    DrawTextureEx(unitTex[(int)(floorf(step)+4)], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, white);
+                    DrawTextureEx(unitTex[(int)(floorf(step)+4)], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
                     return 0;
                 }
                 else
@@ -120,19 +131,20 @@ void Cell::DrawOutlines()
         switch(outlineId)
         {
             case 1:
-                DrawTextureEx(unitTex[0], {position.x + relativeTo.x - 8, position.y + relativeTo.y - 8}, 0, 4, white);
+                DrawTextureEx(unitTex[0], {position.x + relativeTo.x - 8, position.y + relativeTo.y - 8}, 0, 4, color);
                 break;
             case 2:
-                DrawTextureEx(unitTex[7], {position.x + relativeTo.x - 8, position.y + relativeTo.y - 8}, 0, 4, white);
+                DrawTextureEx(unitTex[7], {position.x + relativeTo.x - 8, position.y + relativeTo.y - 8}, 0, 4, color);
                 break;
             case 3:
-                DrawTextureEx(unitTex[11], {position.x + relativeTo.x - 8, position.y + relativeTo.y - 8}, 0, 4, white);
+                DrawTextureEx(unitTex[11], {position.x + relativeTo.x - 8, position.y + relativeTo.y - 8}, 0, 4, color);
                 break;
         }
     }
 }
 Vector2 Cell::GetUnitSize()
 {
+    std::cout << id - 1 << std::endl;
     Vector2 vec = {float(unitTex[id - 1].width*4), float(unitTex[id - 1].height*4)};
         // std::cout<<vec.x<<", "<<vec.y<<std::endl;
     return vec;
