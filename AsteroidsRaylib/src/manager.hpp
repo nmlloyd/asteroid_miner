@@ -18,6 +18,7 @@ class Manager
     private:
         bool continueLoop = true;
         bool showDebug = false;
+        bool showTeleportAnim = false;
         Mouse mouse;
         Camera2D camera;
         Player player;
@@ -48,4 +49,7 @@ class Manager
         float currMineTime;
         float mineCooldown = 0.25f;//in seconds
         float mineSpeed = 1;
+        int startAnimTime;//time of animation start in frames
+        int animPlateauTime = 120;//time before fade in frames
+        int animFadeTime = 100;//time to fade in frames
 };

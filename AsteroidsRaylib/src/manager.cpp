@@ -269,24 +269,52 @@ void Manager::Draw()
     switch (objective)//draw objective in top left
     {
         case Objective::BeamDown:
-            DrawTextEx(font, "Current Objective:\nBeam down to the Asteroid Belt", {10, 10}, 30, 3, WHITE);
+            DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
+            DrawTextEx(font, "Beam down to the Asteroid Belt", {10, 40}, 30, 3, {100, 100, 255, 255});//light blue
             break;
         case Objective::CompleteMission:
             switch(mission.oreToMine)
             {
                 case OreTile::Putin:
-                    string str = "Current Objective:\nFind and Collect " + to_string(mission.quantity) + " Putonium";
-                    DrawTextEx(font, str.c_str(), {10, 10}, 30, 3, WHITE);
+                    string str = "Find and Collect " + to_string(mission.quantity) + " Putonium";
+
+                    DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
+                    DrawTextEx(font, str.c_str(), {10, 40}, 30, 3, {180, 255, 180, 255});//light green
                     break;
             }
             break;
         case Objective::GoToComputer:
-            DrawTextEx(font, "Current Objective:\nGo to the Computer to start the next mission", {10, 10}, 30, 3, WHITE);
+            DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
+            DrawTextEx(font, "Go to the Computer to start the next mission", {10, 40}, 30, 3, WHITE);
+            break;
+        case Objective::ReturnToBase:
+            DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
+            DrawTextEx(font, "Return to the Mothership\n[Press F2]", {10, 40}, 30, 3, {255, 50, 50, 255});//light red
             break;
     }
 
+
     computerUI.Draw();//draw computer ui if enabled
     DrawRectangle(mouse.position.x, mouse.position.y, 10, 10, RED);//Draw mouse cursor
+
+
+    if(showTeleportAnim)//teleport animation logic
+    {
+        float curr = GetTime() * 60;//current time
+        if(curr - startAnimTime <= animPlateauTime)//delta time between the start of anim and current time is < Plateau Time then draw full square
+        {
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), WHITE);
+        }
+        else //draw rect based on time since anim start + plateau time
+        {
+            float val = (Clamp01((animFadeTime - (curr - (startAnimTime + animPlateauTime))) / 60) * 255);
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {255, 255, 255, (unsigned char)val});
+            if(val <= 0)//end anim
+            {
+                showTeleportAnim = false;
+            }
+        }
+    }
     // Cell cell = Cell();
     // cell.position = {1280, 800};
     // cell.Draw();
@@ -359,13 +387,16 @@ void Manager::Update()
     {
         showDebug = !showDebug;//toggle debug
     }
-    if(IsKeyPressed(KEY_F2))//debug switch scenes
+    if(IsKeyPressed(KEY_F2) && objective == Objective::ReturnToBase)//debug switch scenes
     {
-        if(scene == Scenes::Base)
-            ChangeScene(Scenes::Field);//asteroid field
-        else if(scene == Scenes::Field)//spaceship
+        // if(scene == Scenes::Base)
+        //     ChangeScene(Scenes::Field);//asteroid field
+        if(scene == Scenes::Field)//spaceship
         {
-            ChangeScene(Scenes::Base);
+            objective = Objective::GoToComputer;
+            showTeleportAnim = true;
+            startAnimTime = GetTime() * 60;
+            ChangeScene(Scenes::Base);//return to the motherland
             // field.clear();
         }
             //ChangeScene(1);//starship
@@ -411,16 +442,20 @@ void Manager::Update()
                         // std::cout << "collided with cell at position (" << cell.position.x << ", " << cell.position.y << ")" << std::endl;
                         // std::cout << "mouse: " << mouse.GetCollider().x << ", " << mouse.GetCollider().y << std::endl;
                         // std::cout << cell.GetCollider().x << ", " << cell.GetCollider().y << ", " << cell.GetCollider().width << ", " << cell.GetCollider().height << std::endl;
-                        if(CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), (cell.GetCollider())))
+                        if(cell.isActiveAndEnabled && CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), (cell.GetCollider())))
                         {
                             if(cell.allowBreaking)
                             {
                                 // std::cout<<"Rectangle:"<<"X: "<<cell.GetCollider().x<<"Y: "<<cell.GetCollider().y<<"W: "<<cell.GetCollider().width<<"H: "<<cell.GetCollider().height<<std::endl;
                                 float mineSpeed = 1.0f;
                                 cell.step += mineSpeed;
+                                if(cell.step > 2 && static_cast<OreTile>(cell.id) == mission.oreToMine)//cell is broken and the tile broken is the ore you are mining
+                                {
+                                    mission.quantity -= 1;//subtract one from the quantity
+                                }
                                 // break;
                             }
-                            else if(cell.id == 14)//check if is computer
+                            else if(static_cast<OreTile>(cell.id) == OreTile::ComputerOn)//check if is computer
                             {
                                 cout << "Toggled computer screen" << endl;
                                 ToggleComputerScreen();
@@ -428,11 +463,13 @@ void Manager::Update()
                             else if(cell.id == 16)//check if is teleporter button
                             {
                                 // field.clear();
-                                if(objective == Objective::BeamDown)
+                                if(objective == Objective::BeamDown)//check if you went to the computer
                                 {
-                                    objective = Objective::CompleteMission;
+                                    objective = Objective::CompleteMission;//change objective
+                                    startAnimTime = (GetTime() * 60);
+                                    showTeleportAnim = true;//show the teleporting animation
                                     ChangeScene(Scenes::Field);//change scene to asteroids
-                                    continueLoop = false;
+                                    continueLoop = false;//break from all FOR loops
                                     break;
                                 }
                             }
@@ -543,6 +580,11 @@ void Manager::Update()
     if(scene == Scenes::Field)
     {
         LoadSceneField(playerScreenPos, false);
+    }
+
+    if(mission.quantity <= 0)//mission complete
+    {
+        objective = Objective::ReturnToBase;
     }
     // else if (scene == 1)
     // {
@@ -706,7 +748,7 @@ void Manager::LoadSceneField(Vector2 playerScreenPos, bool erase)
 void Manager::SetRandomMission()
 {
     MiningMission randomMission;
-    int amountToMine = GetRandomValue(1, 10) * 10;
+    int amountToMine = GetRandomValue(1, 4) * 4;
     int randomOre = GetRandomValue(0, 2);
     switch(randomOre)
     {

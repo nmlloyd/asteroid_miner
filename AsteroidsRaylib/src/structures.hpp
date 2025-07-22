@@ -29,12 +29,26 @@ enum class Objective
 {
     GoToComputer,//and select next mission
     BeamDown,//go to asteroid field
-    CompleteMission//will show the mission below
+    CompleteMission,//will show the mission below
+    ReturnToBase //return to the ship
 };
-enum class OreTile
+enum class OreTile//maps IDs to tiles
 {
-    Putin = 4//id = 4
-
+    MeteorOutline = 1,
+    MeteorCenter1 = 2,
+    MeteorCenter2 = 3,
+    Putin = 4,
+    BreakingStep1 = 5,
+    BreakingStep2 = 6,
+    BreakingStep3 = 7,
+    HullOutline = 8,
+    HullCenter = 9,
+    Empty = 11,
+    HullBg = 12,
+    ComputerOff = 13,
+    ComputerOn = 14,
+    Teleporter = 15,
+    TeleButton = 16
 };
 struct MiningMission//a struct for modularly adding new missions easily
 {
