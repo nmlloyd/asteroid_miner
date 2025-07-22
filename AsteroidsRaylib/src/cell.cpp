@@ -1,6 +1,7 @@
 #include "cell.hpp"
 #include <cmath>
 #include <iostream>
+#include <cassert>
 #define NUM_OF_TEXTURES 32
 
 
@@ -144,13 +145,15 @@ void Cell::DrawOutlines()
 }
 Vector2 Cell::GetUnitSize()
 {
-    std::cout << id - 1 << std::endl;
+    //std::cout << id - 1 << std::endl;
     Vector2 vec = {float(unitTex[id - 1].width*4), float(unitTex[id - 1].height*4)};
         // std::cout<<vec.x<<", "<<vec.y<<std::endl;
     return vec;
 }
 Rectangle Cell::GetCollider()//world position
 {
+    //assert(id>=0 && id<=16);
+    // std::cout<<"Cell::GetCollider() id:"<<id<<std::endl;
     if(id != 4)
         return {position.x + relativeTo.x, position.y + relativeTo.y, (float)GetUnitSize().x, (float)GetUnitSize().y};
     else

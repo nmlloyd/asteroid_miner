@@ -6,6 +6,7 @@
 #include "mouse.hpp"
 #include "light.hpp"
 #include <string>
+#include "missionui.hpp"
 
 class Manager
 {
@@ -15,6 +16,7 @@ class Manager
         void Start();
         void Update();
     private:
+        bool continueLoop = true;
         bool showDebug = false;
         Mouse mouse;
         Camera2D camera;
@@ -23,11 +25,12 @@ class Manager
         Scenes scene = Scenes::Base;
         Vector2 lastPlayerScreenPos;
         std::vector<Light> lights;
+        void ToggleComputerScreen();
         void DestroyInactiveStars();
         void GenerateAsteroidsGrid(Vector2 positionInScreenWidths);
         void ChangeScene(Scenes sceneId);
         void LoadSceneBase();
-        void LoadSceneField(Vector2 playerScreenPos);
+        void LoadSceneField(Vector2 playerScreenPos, bool erase);
         void SetRandomMission();
         std::vector<Cell> LoadStructureFromFile(std::string fileName);
         // void UpdateLighting(std::vector<Light> lights, Asteroid& asteroid);
@@ -40,4 +43,9 @@ class Manager
         Font font;
         Objective objective;
         MiningMission mission;
+        MissionUI computerUI;
+        float lastMineTime = 0;
+        float currMineTime;
+        float mineCooldown = 0.25f;//in seconds
+        float mineSpeed = 1;
 };

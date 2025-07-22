@@ -80,7 +80,8 @@
 			"xmemory": "cpp",
 			"xstring": "cpp",
 			"xtr1common": "cpp",
-			"xutility": "cpp"
+			"xutility": "cpp",
+			"xtree": "cpp"
 		},
 		"git.autoRepositoryDetection": false,
 		"git.enabled": false
