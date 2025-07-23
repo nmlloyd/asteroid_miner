@@ -398,16 +398,16 @@ void Manager::Update()
     {
         objective = Objective::VoidWarn1;
     }
-    if(playerScreenPos2.y >= voidDist + 3)//player is in void, disable stars
+    if(playerScreenPos2.y >= voidDist + 2)//player is in void, disable stars
     {
         objective = Objective::VoidWarn2;
     }
-    if(playerScreenPos2.y >= voidDist  + 6)//player is in void, enable music
+    if(playerScreenPos2.y >= voidDist  + 3)//player is in void, enable music
     {
         UpdateMusicStream(music);
         objective = Objective::VoidWarn3;
     }
-    if(playerScreenPos2.y >= voidDist  + 9)//player is in purgatory
+    if(playerScreenPos2.y >= voidDist  + 6)//player is in purgatory
     {
         jumpscare = true;
         field.clear();
@@ -437,7 +437,7 @@ void Manager::Update()
 
     // asteroid.Update();
     if(!showDebug)
-        camera.zoom = Clamp(1, 128, expf(logf(camera.zoom) + ((float)GetMouseWheelMove()*0.1f)));
+        camera.zoom = Clamp(0.5, 128, expf(logf(camera.zoom) + ((float)GetMouseWheelMove()*0.1f)));
     else
         camera.zoom = expf(logf(camera.zoom) + ((float)GetMouseWheelMove()*0.1f));
     camera.target = { player.transform.position.x + halfW, player.transform.position.y + halfH };
@@ -876,7 +876,7 @@ void Manager::SwitchObjectiveAndDraw()
             break;
         case Objective::VoidWarn3:
             DrawTextEx(font, "0xE24F63C2", {10, 10}, 30, 15, RED);
-            DrawTextEx(font, "TURN    BACK     NOW", {10, 40}, 30, 3, RED);//light red
+            DrawTextEx(font, "TURN    BACK     NOW", {10, 40}, 40, 3, RED);//light red
             break;
         case Objective::Jumpscare:
             DrawTextEx(font, "  RETURN   TO   MOTHERSHIP  ?", {(float)((GetScreenWidth()-2320) / 2) + GetRandomValue(-16, 16), (float)((GetScreenHeight()-120)/2) + GetRandomValue(-16, 16)}, 120, 20, RED);//light red

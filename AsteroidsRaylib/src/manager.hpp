@@ -27,7 +27,7 @@ class Manager
         Camera2D camera;
         Player player;
         int rnd = 30;
-        int voidDist = 16;
+        int voidDist = 8;
         Vector2 debugPosition; //multipurpose position
         Scenes scene = Scenes::Base;
         Vector2 lastPlayerScreenPos;
