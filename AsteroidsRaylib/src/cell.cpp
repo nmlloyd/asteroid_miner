@@ -184,7 +184,12 @@ Rectangle Cell::GetCollider()//world position
 {
     //assert(id>=0 && id<=16);
     // std::cout<<"Cell::GetCollider() id:"<<id<<std::endl;
-    if(id != 4)
+    if(id != static_cast<int>(OreTile::Putin)&&
+        id != static_cast<int>(OreTile::Andreasite)&&
+        id != static_cast<int>(OreTile::Nathanium)&&
+        id != static_cast<int>(OreTile::Maxium)&&
+        id != static_cast<int>(OreTile::Trueblood)&&
+        id != static_cast<int>(OreTile::Lucasite))
         return {position.x + relativeTo.x, position.y + relativeTo.y, (float)GetUnitSize().x, (float)GetUnitSize().y};
     else
         return {position.x + relativeTo.x, position.y + relativeTo.y, (float)GetUnitSize().x/8, (float)GetUnitSize().y/8};
