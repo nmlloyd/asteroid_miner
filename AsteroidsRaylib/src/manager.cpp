@@ -458,7 +458,8 @@ void Manager::Update()
                             else if(static_cast<OreTile>(cell.id) == OreTile::ComputerOn)//check if is computer
                             {
                                 cout << "Toggled computer screen" << endl;
-                                ToggleComputerScreen();
+                                // ToggleComputerScreen();
+                                computerUI.isActiveAndEnabled = true;//only set to true, enter to escape it
                             }
                             else if(cell.id == 16)//check if is teleporter button
                             {
@@ -566,7 +567,7 @@ void Manager::Update()
         }
         if(IsKeyPressed(KEY_ENTER))
         {
-            ToggleComputerScreen();
+            computerUI.isActiveAndEnabled = false;
         }
     }
     float halfW = player.sprite.width/2;
@@ -798,5 +799,6 @@ void Manager::SetRandomMission()
 
 void Manager::ToggleComputerScreen()
 {
+    // if(!computerUI.isActiveAndEnabled)
     computerUI.isActiveAndEnabled = !computerUI.isActiveAndEnabled;//toggle
 }
