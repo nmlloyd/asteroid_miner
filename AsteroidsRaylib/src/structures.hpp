@@ -48,7 +48,16 @@ enum class OreTile//maps IDs to tiles
     ComputerOff = 13,
     ComputerOn = 14,
     Teleporter = 15,
-    TeleButton = 16
+    TeleButton = 16,
+
+    Meddorite = 17,
+    BlueOre = 18,
+    Maxium = 19,
+    Trueblood = 20,//lucas t
+    Lucasite = 21,//the other lucas
+    Andreasite = 22,
+    Nathanium = 23,//just nathan
+    HamOre = 24//ham
 };
 struct MiningMission//a struct for modularly adding new missions easily
 {

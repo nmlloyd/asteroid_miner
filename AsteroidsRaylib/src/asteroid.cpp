@@ -180,7 +180,7 @@ void Asteroid::CreateRandomAsteroid(Vector2 centerMain, int maxAsteroids, int mi
         {
             while(randomDirection == lastRad)
             {
-                randomDirection = GetRandomValue(0,5)%4;
+                randomDirection = GetRandomValue(0,4);
             }
         }
 
@@ -224,10 +224,50 @@ void Asteroid::CreateRandomAsteroid(Vector2 centerMain, int maxAsteroids, int mi
             cell.id = GetRandomValue(2, 3);//random center
             // cell.id = 9;
             // cell.outlineId = 2;
-            int rnd = GetRandomValue(0, 32);
-            if(rnd == 7)
+            int putoniumrnd = GetRandomValue(0, 32);//putonium is common
+            int broRnd = GetRandomValue(0, 64);//bro ores are uncommon
+            int greenRnd = GetRandomValue(0, 128);//green ore is rare
+            int blueRnd = GetRandomValue(0, 400);//blue ore is very rare
+            int hamRnd = GetRandomValue(0, 800);//hamza ore is basically impossible to get ngl
+            if(putoniumrnd == 7)
             {
-                cell.id = 4;
+                cell.id = 4;//putonium
+            }
+            if(broRnd == 7)
+            {
+                int broRnd2 = GetRandomValue(1, 5);
+                if(broRnd2 == 1)//max
+                {
+                    cell.id = static_cast<int>(OreTile::Maxium);
+                }
+                else if(broRnd2 == 2)//lucas t
+                {
+                    cell.id = static_cast<int>(OreTile::Trueblood);
+                }
+                else if(broRnd2 == 3)//lucas
+                {
+                    cell.id = static_cast<int>(OreTile::Lucasite);
+                }
+                else if(broRnd2 == 4)//nathan
+                {
+                    cell.id = static_cast<int>(OreTile::Nathanium);
+                }
+                else if(broRnd2 == 5)//andreas
+                {
+                    cell.id = static_cast<int>(OreTile::Andreasite);
+                }
+            }
+            if(greenRnd == 7)
+            {
+                cell.id = static_cast<int>(OreTile::Meddorite);
+            }
+            if(blueRnd == 7)
+            {
+                cell.id = static_cast<int>(OreTile::BlueOre);
+            }
+            if(hamRnd == 7)
+            {
+                cell.id = static_cast<int>(OreTile::HamOre);
             }
             
             // bool isNotOutline = true;

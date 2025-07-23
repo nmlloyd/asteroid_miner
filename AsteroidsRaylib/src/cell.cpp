@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <cassert>
+#include "structures.hpp"
 #define NUM_OF_TEXTURES 32
 
 
@@ -70,6 +71,30 @@ Cell::Cell()
                 case 15:
                     unitTex[i] = LoadTexture("Graphics/button.png");//decoration
                     break;
+                case 16:
+                    unitTex[i] = LoadTexture("Graphics/meddorite.png");//ore
+                    break;
+                case 17:
+                    unitTex[i] = LoadTexture("Graphics/lazurite.png");//ore
+                    break;
+                case 18:
+                    unitTex[i] = LoadTexture("Graphics/maxium.png");//ore
+                    break;
+                case 19:
+                    unitTex[i] = LoadTexture("Graphics/lucasium.png");//trueblood
+                    break;
+                case 20:
+                    unitTex[i] = LoadTexture("Graphics/lucasite.png");//ore
+                    break;
+                case 21:
+                    unitTex[i] = LoadTexture("Graphics/andreasite.png");//ore
+                    break;
+                case 22:
+                    unitTex[i] = LoadTexture("Graphics/nathanium.png");//ore
+                    break;
+                case 23:
+                    unitTex[i] = LoadTexture("Graphics/hamza.png");//ham ore
+                    break;
             }
         }
     }
@@ -83,7 +108,12 @@ int Cell::Draw()
 {
     if(isActiveAndEnabled)
     {
-        if(id != 4)
+        if(id != static_cast<int>(OreTile::Putin)&&
+            id != static_cast<int>(OreTile::Andreasite)&&
+            id != static_cast<int>(OreTile::Nathanium)&&
+            id != static_cast<int>(OreTile::Maxium)&&
+            id != static_cast<int>(OreTile::Trueblood)&&
+            id != static_cast<int>(OreTile::Lucasite))
         {
             DrawTextureEx(unitTex[id - 1], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
             if(step != -1)//do nothing if not breaking

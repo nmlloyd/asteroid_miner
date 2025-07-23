@@ -266,6 +266,7 @@ void Manager::Draw()
         //     // DrawTexture(shading, );
         // EndBlendMode();
     EndMode2D();
+    string str = "Find and Collect " + to_string(mission.quantity) + " " + mission.text;
     switch (objective)//draw objective in top left
     {
         case Objective::BeamDown:
@@ -273,15 +274,14 @@ void Manager::Draw()
             DrawTextEx(font, "Beam down to the Asteroid Belt", {10, 40}, 30, 3, {100, 100, 255, 255});//light blue
             break;
         case Objective::CompleteMission:
-            switch(mission.oreToMine)
-            {
-                case OreTile::Putin:
-                    string str = "Find and Collect " + to_string(mission.quantity) + " Putonium";
+            // switch(mission.oreToMine)
+            // {
+            //     case OreTile::Putin:
 
-                    DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
-                    DrawTextEx(font, str.c_str(), {10, 40}, 30, 3, {180, 255, 180, 255});//light green
-                    break;
-            }
+            DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
+            DrawTextEx(font, str.c_str(), {10, 40}, 30, 3, {180, 255, 180, 255});//light green
+                    // break;
+            // }
             break;
         case Objective::GoToComputer:
             DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
@@ -701,7 +701,6 @@ void Manager::LoadSceneBase()
         cell.allowCollisions = false;
         cell.drawOutline = true;
         cell.color = WHITE;
-
         // if(cell.id == 14)//if it is a computer then allow collision
         // {
         //     cell.allowCollisions = true;
@@ -712,12 +711,6 @@ void Manager::LoadSceneBase()
         cell.allowBreaking = false;
         cell.color = WHITE;
     }
-    // for(auto& cell : tele.cells)//make an invisible collider ofr the teleporter
-    // {
-    //     cell.allowBreaking = false;
-    //     cell.drawOutline = false;
-    //     cell.color = WHITE;
-    // }
     for(auto& cell : meteorite.cells)
     {
         cell.allowBreaking = false;
@@ -748,21 +741,54 @@ void Manager::LoadSceneField(Vector2 playerScreenPos, bool erase)
 void Manager::SetRandomMission()
 {
     MiningMission randomMission;
-    int amountToMine = GetRandomValue(1, 4) * 4;
-    int randomOre = GetRandomValue(0, 2);
+    int amountToMine = GetRandomValue(1, 4);
+    int randomOre = GetRandomValue(0, 8);
     switch(randomOre)
     {
         case 0://putin random
             randomMission.oreToMine = OreTile::Putin;
-            cout<<"Putin x" + to_string(amountToMine)<<endl;
+            amountToMine *= 10;
+            randomMission.text = "Putonium";
             break;
-        case 1://will add viridite later
-            randomMission.oreToMine = OreTile::Putin;
-            cout<<"Putin x" + to_string(amountToMine)<<endl;
+        case 1:
+            randomMission.oreToMine = OreTile::Meddorite;
+            amountToMine *= 3;
+            randomMission.text = "Meddorite";
             break;
-        case 2://will add the blue ore later
-            randomMission.oreToMine = OreTile::Putin;
-            cout<<"Putin x" + to_string(amountToMine)<<endl;
+        case 2:
+            randomMission.oreToMine = OreTile::BlueOre;
+            amountToMine *= 2;
+            randomMission.text = "Lazurite";
+            break;
+
+        case 3:
+            randomMission.oreToMine = OreTile::Maxium;
+            amountToMine *= 6;
+            randomMission.text = "Maxium";
+            break;
+        case 4:
+            randomMission.oreToMine = OreTile::Trueblood;
+            amountToMine *= 8;
+            randomMission.text = ("Lucasium-T");
+            break;
+        case 5:
+            randomMission.oreToMine = OreTile::Lucasite;
+            amountToMine *= 8;
+            randomMission.text = "Lucasite";
+            break;
+        case 6:
+            randomMission.oreToMine = OreTile::Andreasite;
+            amountToMine *= 8;
+            randomMission.text = "Andreasite";
+            break;
+        case 7:
+            randomMission.oreToMine = OreTile::Nathanium;
+            amountToMine *= 8;
+            randomMission.text = "Nathanium";
+            break;
+        case 8:
+            randomMission.oreToMine = OreTile::HamOre;
+            randomMission.text = "Hamzterzoid";
             break;
     }
     randomMission.quantity = amountToMine;
