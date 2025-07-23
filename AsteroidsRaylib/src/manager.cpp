@@ -402,7 +402,7 @@ void Manager::Update()
     {
         objective = Objective::VoidWarn2;
     }
-    if(playerScreenPos2.y >= voidDist  + 3)//player is in void, enable music
+    if(playerScreenPos2.y >= voidDist  + 4)//player is in void, enable music
     {
         UpdateMusicStream(music);
         objective = Objective::VoidWarn3;
