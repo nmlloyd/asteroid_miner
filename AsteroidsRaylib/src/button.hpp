@@ -1,0 +1,30 @@
+#pragma once
+#include <raylib.h>
+#include <string>
+#include "structures.hpp"
+
+using namespace std;
+
+
+
+
+
+class Button{
+    private:
+    static Texture2D sprite[TOTAL_NUM_OF_BUTTON_SPRITES];
+    ButtonSpriteTypes spriteID;
+    Rectangle buttonArea;
+    string buttonText;
+    int getSpriteIndex();
+
+    public:
+    Button();
+    Button(ButtonSpriteTypes spriteIDIn, Vector2 position);
+    void draw();
+    void setup();
+    Rectangle getButtonArea();
+
+};
+
+//Button b1 = Button(...)
+//b1.draw();

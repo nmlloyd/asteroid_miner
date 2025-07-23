@@ -65,3 +65,10 @@ struct MiningMission//a struct for modularly adding new missions easily
     OreTile oreToMine;
     int quantity;//amount of ore to mine
 };
+
+//CHANGE NUMBERS TOGETHER
+const int TOTAL_NUM_OF_BUTTON_SPRITES =4;
+enum class ButtonSpriteTypes{
+    SELL, BUY, ITEM, UIPROMPT
+
+};

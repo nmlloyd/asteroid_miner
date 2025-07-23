@@ -612,6 +612,7 @@ void Manager::Update()
     //     cout <<"Cell size: " << ast.cells.size()<<endl;
     //     cout <<"Texture ID: "<< ast.cells[10].unitTex->id<<endl;
     // }
+
 }
 
 float Manager::Clamp01(float n)

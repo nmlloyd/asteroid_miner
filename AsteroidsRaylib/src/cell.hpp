@@ -10,6 +10,7 @@ class Cell
         void DrawOutlines();
         Vector2 GetUnitSize();
         Rectangle GetCollider();
+
         Vector2 position;//local position, relative to asteroid
         int id = 2;
         int outlineId = 1;
