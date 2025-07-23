@@ -14,85 +14,85 @@ Cell::Cell()
     {
         if(unitTex[i].id == 0)
         {
-            switch(i)
+            switch(i + 1)
             {
-                case 0:
+                case static_cast<int>(OreTile::MeteorOutline):
                     // unitTex[i] = LoadTexture("Graphics/meteor_tile_outline.png");
                     unitTex[i] = LoadTexture("Graphics/meteorite_outline_original.png");
                     break;
-                case 1:
+                case static_cast<int>(OreTile::MeteorCenter1):
                     // unitTex[i] = LoadTexture("Graphics/meteor_tile_center_1.png");
                     unitTex[i] = LoadTexture("Graphics/meteorite_center_original_1.png");
                     break;
-                case 2:
+                case static_cast<int>(OreTile::MeteorCenter2):
                     // unitTex[i] = LoadTexture("Graphics/meteor_tile_center_2.png");
                     unitTex[i] = LoadTexture("Graphics/meteorite_center_original_2.png");
                     break;
-                case 3:
+                case static_cast<int>(OreTile::Putin):
                     // unitTex[i] = LoadTexture("Graphics/meteor_tile_gold.png");
                     // unitTex[i] = LoadTexture("Graphics/putonium_235.png");
                     unitTex[i] = LoadTexture("Graphics/putonium_low_sat.png");
                     break;
-                case 4:
+                case static_cast<int>(OreTile::BreakingStep1):
                     unitTex[i] = LoadTexture("Graphics/breaking_1.png");
                     break;
-                case 5:
+                case static_cast<int>(OreTile::BreakingStep2):
                     unitTex[i] = LoadTexture("Graphics/breaking_2.png");
                     // unitTex[i] = LoadTexture("Graphics/meteor_tile_btmex.png");
                     break;
-                case 6:
+                case static_cast<int>(OreTile::BreakingStep3):
                     unitTex[i] = LoadTexture("Graphics/breaking_3.png");
                     // unitTex[i] = LoadTexture("Graphics/meteor_tile_leftex.png");
                     break;
-                case 7:
+                case static_cast<int>(OreTile::HullOutline):
                     unitTex[i] = LoadTexture("Graphics/ship_hull_outline_3.png");
                     break;
-                case 8:
+                case static_cast<int>(OreTile::HullCenter):
                     unitTex[i] = LoadTexture("Graphics/ship_hull_center.png");
                     break;
-                case 9:
-                    unitTex[i] = LoadTexture("Graphics/dark_25perc.png");
-                    break;
-                case 10:
+                // case static_cast<int>(OreTile::):
+                //     unitTex[i] = LoadTexture("Graphics/dark_25perc.png");
+                //     break;
+                case static_cast<int>(OreTile::Empty):
                     unitTex[i] = LoadTexture("Graphics/empty_center.png");
                     break;
-                case 11:
+                case static_cast<int>(OreTile::HullBg):
                     unitTex[i] = LoadTexture("Graphics/ship_hull_background.png");//outline
                     break;
-                case 12:
+                case static_cast<int>(OreTile::ComputerOff):
                     unitTex[i] = LoadTexture("Graphics/computer_off.png");//decoration
                     break;
-                case 13:
+                case static_cast<int>(OreTile::ComputerOn):
                     unitTex[i] = LoadTexture("Graphics/computer_on.png");//decoration
                     break;
-                case 14:
+                case static_cast<int>(OreTile::Teleporter):
                     unitTex[i] = LoadTexture("Graphics/teleporter.png");//decoration
                     break;
-                case 15:
+                case static_cast<int>(OreTile::TeleButton):
                     unitTex[i] = LoadTexture("Graphics/button.png");//decoration
                     break;
-                case 16:
+                case static_cast<int>(OreTile::Meddorite):
                     unitTex[i] = LoadTexture("Graphics/meddorite.png");//ore
                     break;
-                case 17:
+                case static_cast<int>(OreTile::BlueOre):
                     unitTex[i] = LoadTexture("Graphics/lazurite.png");//ore
                     break;
-                case 18:
+                case static_cast<int>(OreTile::Maxium):
                     unitTex[i] = LoadTexture("Graphics/maxium.png");//ore
                     break;
-                case 19:
+                case static_cast<int>(OreTile::Trueblood):
                     unitTex[i] = LoadTexture("Graphics/lucasium.png");//trueblood
                     break;
-                case 20:
+                case static_cast<int>(OreTile::Lucasite):
                     unitTex[i] = LoadTexture("Graphics/lucasite.png");//ore
                     break;
-                case 21:
+                case static_cast<int>(OreTile::Andreasite):
                     unitTex[i] = LoadTexture("Graphics/andreasite.png");//ore
                     break;
-                case 22:
+                case static_cast<int>(OreTile::Nathanium):
                     unitTex[i] = LoadTexture("Graphics/nathanium.png");//ore
                     break;
-                case 23:
+                case static_cast<int>(OreTile::HamOre):
                     unitTex[i] = LoadTexture("Graphics/hamza.png");//ham ore
                     break;
             }
@@ -118,9 +118,9 @@ int Cell::Draw()
             DrawTextureEx(unitTex[id - 1], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
             if(step != -1)//do nothing if not breaking
             {
-                if(step <= 2)
+                if(step < 10)
                 {
-                    DrawTextureEx(unitTex[(int)(floorf(step)+4)], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
+                    DrawTextureEx(unitTex[(int)(ceilf(step/5)+4)], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
                     return 0;
                 }
                 else
@@ -137,9 +137,9 @@ int Cell::Draw()
             DrawTextureEx(unitTex[id - 1], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 0.5, color);
             if(step != -1)//do nothing if not breaking
             {
-                if(step <= 2)
+                if(step < 10)//block is not broken
                 {
-                    DrawTextureEx(unitTex[(int)(floorf(step)+4)], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
+                    DrawTextureEx(unitTex[(int)(ceilf(step/5)+4)], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
                     return 0;
                 }
                 else

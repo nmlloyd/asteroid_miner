@@ -19,10 +19,16 @@ class Manager
         bool continueLoop = true;
         bool showDebug = false;
         bool showTeleportAnim = false;
+        bool canMine = true;
+        bool jumpscare = false;
+        Music music;
         Mouse mouse;
+        Texture2D noise;
         Camera2D camera;
         Player player;
         int rnd = 30;
+        int voidDist = 16;
+        Vector2 debugPosition; //multipurpose position
         Scenes scene = Scenes::Base;
         Vector2 lastPlayerScreenPos;
         std::vector<Light> lights;
@@ -33,6 +39,16 @@ class Manager
         void LoadSceneBase();
         void LoadSceneField(Vector2 playerScreenPos, bool erase);
         void SetRandomMission();
+
+        //local draw funcs
+        void DrawDebugColls();
+        void DrawAsteroidField();
+        void DrawStarsBackground();
+        void DrawTeleportAnimationFromTime();
+        void SwitchObjectiveAndDraw();
+        void SwitchPickaxeAndDraw();
+        void DrawMouseCursor();
+
         std::vector<Cell> LoadStructureFromFile(std::string fileName);
         // void UpdateLighting(std::vector<Light> lights, Asteroid& asteroid);
         float Clamp01(float toClamp);
@@ -48,8 +64,10 @@ class Manager
         float lastMineTime = 0;
         float currMineTime;
         float mineCooldown = 0.25f;//in seconds
-        float mineSpeed = 1;
+        float mineSpeed = 0.3333f;//(1/mineSpeed) * 3 = clicks to break ore
         int startAnimTime;//time of animation start in frames
-        int animPlateauTime = 120;//time before fade in frames
+        int animPlateauTime = 80;//time before fade in frames
         int animFadeTime = 100;//time to fade in frames
+        float maxMineDist = 8;//in tiles
+        std::vector<Pickaxe> pickaxes;
 };

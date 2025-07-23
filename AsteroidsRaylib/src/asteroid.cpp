@@ -209,7 +209,6 @@ void Asteroid::CreateRandomAsteroid(Vector2 centerMain, int maxAsteroids, int mi
         // {
         // }
         
-        
 
         for(int j = 0; j < vecs.size(); j++)
         {
@@ -224,11 +223,11 @@ void Asteroid::CreateRandomAsteroid(Vector2 centerMain, int maxAsteroids, int mi
             cell.id = GetRandomValue(2, 3);//random center
             // cell.id = 9;
             // cell.outlineId = 2;
-            int putoniumrnd = GetRandomValue(0, 32);//putonium is common
-            int broRnd = GetRandomValue(0, 64);//bro ores are uncommon
+            int putoniumrnd = GetRandomValue(0, 64);//putonium is common
+            int broRnd = GetRandomValue(0, 32);//bro ores are uncommon
             int greenRnd = GetRandomValue(0, 128);//green ore is rare
             int blueRnd = GetRandomValue(0, 400);//blue ore is very rare
-            int hamRnd = GetRandomValue(0, 800);//hamza ore is basically impossible to get ngl
+            int hamRnd = GetRandomValue(0, 1000);//hamza ore is basically impossible to get ngl
             if(putoniumrnd == 7)
             {
                 cell.id = 4;//putonium
