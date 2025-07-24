@@ -2,6 +2,8 @@
 #include <raylib.h>
 #include <string>
 
+using namespace std;
+
 struct Transform2D
 {
     Vector2 position;
@@ -23,6 +25,13 @@ struct Pickaxe
 {
     std::string name;
     float miningSpeed;
+};
+struct Animator //a struct with a point and a boolean
+{
+    std::string file;//file location
+    Image animation;
+    int frames = 0;
+    Texture2D texture;
 };
 
 

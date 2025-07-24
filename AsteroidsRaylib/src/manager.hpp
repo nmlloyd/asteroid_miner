@@ -21,9 +21,17 @@ class Manager
         bool showTeleportAnim = false;
         bool canMine = true;
         bool jumpscare = false;
+        bool movedThisFrame = false;
+
+        int frameCounter = 0;
+        int frameDelay = 3;
+        int currentAnimFrame = 0;
+        unsigned char nextFrameDataOffset;
+
         Music music;
         Mouse mouse;
         Texture2D noise;
+        Animator widePutinWalkingAnim;
         Camera2D camera;
         Player player;
         int rnd = 30;

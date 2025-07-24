@@ -11,6 +11,9 @@ Manager::Manager()
 void Manager::Start()
 {
 
+    widePutinWalkingAnim.animation = LoadImageAnim("Graphics/wide_putin_walking.gif", &widePutinWalkingAnim.frames);
+    widePutinWalkingAnim.texture = LoadTextureFromImage(widePutinWalkingAnim.animation);
+
     font = LoadFont("Font/monogram.ttf");
     noise = LoadTexture("Graphics/red_noise.png");
     player = Player();
@@ -102,6 +105,8 @@ void Manager::Draw()
     DrawMouseCursor();
 
 
+    DrawTexture(widePutinWalkingAnim.texture, GetScreenWidth() - widePutinWalkingAnim.texture.width, 0, WHITE);
+
     DrawTeleportAnimationFromTime();
     if(jumpscare)
     {
@@ -149,6 +154,10 @@ void Manager::Update()
         {
             player.velocity.y = 0;
         }
+        if(player.velocity.x != 0 || player.velocity.y != 0)//moving in at least one direction
+        {
+
+        }
     }
     else
     {
@@ -156,20 +165,44 @@ void Manager::Update()
         if(IsKeyDown(KEY_A))
         {
             player.velocity.x -= player.speed/3;
+            movedThisFrame = true;
         }
         else if(IsKeyDown(KEY_D))
         {
             player.velocity.x += player.speed/3;
+            movedThisFrame = true;
         }
         if(IsKeyDown(KEY_W))
         {
             player.velocity.y -= player.speed/3;
+            movedThisFrame = true;
         }
         else if(IsKeyDown(KEY_S))
         {
             player.velocity.y += player.speed/3;
+            movedThisFrame = true;
         }
-        
+        if(movedThisFrame)
+        {
+            frameCounter++;
+            if (frameCounter >= frameDelay)
+            {
+                // Move to next frame
+                // NOTE: If final frame is reached we return to first frame
+                currentAnimFrame++;
+                if (currentAnimFrame >= widePutinWalkingAnim.frames) currentAnimFrame = 0;
+
+                // Get memory offset position for next frame data in image.data
+                nextFrameDataOffset = widePutinWalkingAnim.animation.width * widePutinWalkingAnim.animation.height * 4 * currentAnimFrame;
+
+                // Update GPU texture data with next frame image data
+                // WARNING: Data size (frame size) and pixel format must match already created texture
+                UpdateTexture(widePutinWalkingAnim.texture, ((unsigned char *)widePutinWalkingAnim.animation.data) + nextFrameDataOffset);
+
+                frameCounter = 0;
+            }
+        }
+        movedThisFrame = false;
         // if(abs(player.velocity.x) > player.speed)
         // {
         //     player.velocity.x = player.speed;
@@ -436,6 +469,8 @@ void Manager::Update()
 
 
     // asteroid.Update();
+
+
     if(!showDebug)
         camera.zoom = Clamp(0.5, 128, expf(logf(camera.zoom) + ((float)GetMouseWheelMove()*0.1f)));
     else
