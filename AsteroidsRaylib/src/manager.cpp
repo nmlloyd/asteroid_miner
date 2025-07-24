@@ -124,14 +124,10 @@ void Manager::Draw()
         DrawTextureEx(noise, {(float)-GetScreenWidth() + GetRandomValue(-160, 160), (float)-GetScreenHeight() + GetRandomValue(-160, 160)}, 0, 2, {255, 255, 255, 16});//static texture for scare
         SwitchObjectiveAndDraw();
     }
-<<<<<<< HEAD
-
-    // shope.draw();
-=======
->>>>>>> 1639ee2586c13c1c7b946a46f42c3689f641c8ea
     // Cell cell = Cell();
     // cell.position = {1280, 800};
     // cell.Draw();
+    
 }
 void Manager::Update()
 {
