@@ -118,13 +118,14 @@ void Manager::Draw()
     DrawTeleportAnimationFromTime();
     if(jumpscare)
     {
-        
+
         objective = Objective::Jumpscare;
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
 
         DrawTextureEx(noise, {(float)-GetScreenWidth() + GetRandomValue(-160, 160), (float)-GetScreenHeight() + GetRandomValue(-160, 160)}, 0, 2, {255, 255, 255, 16});//static texture for scare
         SwitchObjectiveAndDraw();
     }
+    
     // Cell cell = Cell();
     // cell.position = {1280, 800};
     // cell.Draw();
@@ -245,19 +246,19 @@ void Manager::Update()
     if (IsKeyPressed(KEY_B)&&showDebug){
             Money +=10;
         }
-    if(IsKeyPressed(KEY_KP_1))//debug switch to default pick
+    if(IsKeyPressed(KEY_KP_1)&&showDebug)//debug switch to default pick
     {
         player.pickaxe = PickaxeType::Default;
     }
-    else if(IsKeyPressed(KEY_KP_2))//debug switch to medium q pick
+    else if(IsKeyPressed(KEY_KP_2)&&showDebug)//debug switch to medium q pick
     {
         player.pickaxe = PickaxeType::Epic;
     }
-    else if(IsKeyPressed(KEY_KP_3))//debug switch to LEGENDARY pick
+    else if(IsKeyPressed(KEY_KP_3)&&showDebug)//debug switch to LEGENDARY pick
     {
         player.pickaxe = PickaxeType::Legendary;
     }
-    else if(IsKeyPressed(KEY_KP_4))//debug switch to wilbur pick
+    else if(IsKeyPressed(KEY_KP_4)&&showDebug)//debug switch to wilbur pick
     {
         player.pickaxe = PickaxeType::Wilbur;
     }
