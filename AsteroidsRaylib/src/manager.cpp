@@ -162,10 +162,10 @@ void Manager::Update()
         {
             player.velocity.y = 0;
         }
-        if(player.velocity.x != 0 || player.velocity.y != 0)//moving in at least one direction
-        {
+        // if(player.velocity.x != 0 || player.velocity.y != 0)//moving in at least one direction
+        // {
 
-        }
+        // }
     }
     else
     {
@@ -815,7 +815,7 @@ void Manager::SetRandomMission()
             break;
         case 8:
             randomMission.oreToMine = OreTile::HamOre;
-            amountToMine *= 5;
+            amountToMine *= 1;
             randomMission.text = "Hamzterzoid";
             break;
     }
