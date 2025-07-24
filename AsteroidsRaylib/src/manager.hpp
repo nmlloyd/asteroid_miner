@@ -7,7 +7,7 @@
 #include "light.hpp"
 #include <string>
 #include "missionui.hpp"
-#include "button.hpp"
+#include "Shope.hpp"
 
 class Manager
 {
@@ -53,6 +53,5 @@ class Manager
         int startAnimTime;//time of animation start in frames
         int animPlateauTime = 120;//time before fade in frames
         int animFadeTime = 100;//time to fade in frames
-
-        
+        int Money=0;
 };

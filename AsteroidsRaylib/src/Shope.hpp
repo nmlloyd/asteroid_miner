@@ -12,7 +12,9 @@ class Shope{
     Rectangle backplate;
 
     public:
-    Shope();
+    Shope(Vector2 pos);
     
+    void update();
+    void draw();
 
 };

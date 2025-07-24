@@ -315,6 +315,8 @@ void Manager::Draw()
             }
         }
     }
+
+    shope.draw();
     // Cell cell = Cell();
     // cell.position = {1280, 800};
     // cell.Draw();
