@@ -54,5 +54,5 @@ class Manager
         int animPlateauTime = 120;//time before fade in frames
         int animFadeTime = 100;//time to fade in frames
 
-        Button b1;
+        
 };
