@@ -29,6 +29,8 @@ class Manager
         int currentAnimFrame = 0;
         unsigned int nextFrameDataOffset = 0;
 
+        float debugSize = 4;
+
         Music music;
         Music staticMusic;
         Mouse mouse;

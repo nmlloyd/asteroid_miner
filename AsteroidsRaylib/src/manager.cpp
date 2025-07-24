@@ -255,6 +255,15 @@ void Manager::Update()
         player.pickaxe = PickaxeType::Wilbur;
     }
 
+    if(IsKeyPressedRepeat(KEY_EQUAL))//debug add one to debugSize
+    {
+        debugSize = Clamp(1, 256, debugSize + 1);
+    }
+    else if(IsKeyPressedRepeat(KEY_MINUS))//debug subtract one from debugSize
+    {
+        debugSize = Clamp(1, 256, debugSize - 1);
+    }
+
     // double magnitude = sqrt(pow(player.velocity.x, 2) + pow(player.velocity.y, 2));
     // player.velocity.x /= magnitude;
     // player.velocity.y /= magnitude;
@@ -328,6 +337,21 @@ void Manager::Update()
                                     continueLoop = false;//break from all FOR loops
                                     break;
                                 }
+                            }
+                        }
+                        Vector2 mpos = GetScreenToWorld2D(GetMousePosition(), camera);
+                        if(showDebug && cell.isActiveAndEnabled && CheckCollisionRecs({mpos.x, mpos.y, 48 * debugSize, 48 * debugSize}, (cell.GetCollider())))
+                        {
+
+                            if(cell.allowBreaking)
+                            {
+                                // std::cout<<"Rectangle:"<<"X: "<<cell.GetCollider().x<<"Y: "<<cell.GetCollider().y<<"W: "<<cell.GetCollider().width<<"H: "<<cell.GetCollider().height<<std::endl;
+                                cell.step += 32;
+                                if(cell.step >= 10 && static_cast<OreTile>(cell.id) == mission.oreToMine)//cell is broken and the tile broken is the ore you are mining
+                                {
+                                    mission.quantity -= 1;//subtract one from the quantity
+                                }
+                                // break;
                             }
                         }
                         
@@ -830,7 +854,7 @@ void Manager::DrawAsteroidField()
                 {
                     // cout << cell.isActiveAndEnabled << endl;
                     if(cell.isActiveAndEnabled)
-                        DrawRectangleRec(cell.GetCollider(), WHITE);//draw debug colliders
+                        DrawRectangleRec(cell.GetCollider(), {255, 255, 255, 96});//draw debug colliders
                 }
             }
         }
@@ -843,7 +867,8 @@ void Manager::DrawDebugColls()
         DrawRectangleRec(player.GetCollider(), PURPLE);
         Vector2 worldPosButton = GetScreenToWorld2D({computerUI.GetButtonCollider().x, computerUI.GetButtonCollider().y}, camera);
         DrawRectangleRec({worldPosButton.x, worldPosButton.y, computerUI.GetButtonCollider().width, computerUI.GetButtonCollider().height}, RED);
-
+        Vector2 mpos = GetScreenToWorld2D(mouse.position, camera);
+        DrawRectangle(mpos.x, mpos.y, 48 * debugSize, 48 * debugSize, {255, 0, 0, 127});
     }
 }
 
