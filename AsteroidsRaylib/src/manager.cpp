@@ -105,7 +105,9 @@ void Manager::Draw()
     // {
     //     DrawRectangle(0, 0, 1000, 1000, GREEN);
     // }
-
+    string str = "Butt Tokens: " + to_string(Money);
+    DrawText(str.c_str(), 0,120,30,YELLOW);
+    
     computerUI.Draw();//draw computer ui if enabled
     // Vector2 mouseNormalized = Vector2Scale(Vector2Normalize(mouse.position), maxMineDist * 48);//normalixed mouse pos
     DrawMouseCursor();
@@ -122,6 +124,11 @@ void Manager::Draw()
         DrawTextureEx(noise, {(float)-GetScreenWidth() + GetRandomValue(-160, 160), (float)-GetScreenHeight() + GetRandomValue(-160, 160)}, 0, 2, {255, 255, 255, 16});//static texture for scare
         SwitchObjectiveAndDraw();
     }
+<<<<<<< HEAD
+
+    // shope.draw();
+=======
+>>>>>>> 1639ee2586c13c1c7b946a46f42c3689f641c8ea
     // Cell cell = Cell();
     // cell.position = {1280, 800};
     // cell.Draw();
@@ -237,7 +244,11 @@ void Manager::Update()
             // field.clear();
         }
             //ChangeScene(1);//starship
+            Money +=10;
     }
+    if (IsKeyPressed(KEY_B)&&showDebug){
+            Money +=10;
+        }
     if(IsKeyPressed(KEY_KP_1))//debug switch to default pick
     {
         player.pickaxe = PickaxeType::Default;
