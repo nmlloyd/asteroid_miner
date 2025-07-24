@@ -84,7 +84,8 @@ enum class OreTile//maps IDs to tiles
     Lucasite = 21,//the other lucas
     Andreasite = 22,
     Nathanium = 23,//just nathan
-    HamOre = 24//ham
+    HamOre = 24,//ham
+    ForceField = 25
 };
 struct MiningMission//a struct for modularly adding new missions easily
 {
@@ -94,7 +95,7 @@ struct MiningMission//a struct for modularly adding new missions easily
 };
 
 //CHANGE NUMBERS TOGETHER
-const int TOTAL_NUM_OF_BUTTON_SPRITES =4;
+const int TOTAL_NUM_OF_BUTTON_SPRITES = 4;
 enum class ButtonSpriteTypes{
     SELL, BUY, ITEM, UIPROMPT
 
