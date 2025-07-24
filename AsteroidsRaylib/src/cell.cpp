@@ -95,6 +95,9 @@ Cell::Cell()
                 case static_cast<int>(OreTile::HamOre):
                     unitTex[i] = LoadTexture("Graphics/hamza.png");//ham ore
                     break;
+                case static_cast<int>(OreTile::ForceField):
+                    unitTex[i] = LoadTexture("Graphics/electric_door.png");//decor
+                    break;
             }
         }
     }
