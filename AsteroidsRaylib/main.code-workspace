@@ -82,8 +82,7 @@
 			"xtr1common": "cpp",
 			"xutility": "cpp",
 			"xtree": "cpp",
-			"set": "cpp",
-			"map": "cpp"
+			"set": "cpp"
 		},
 		"git.autoRepositoryDetection": false,
 		"git.enabled": false
