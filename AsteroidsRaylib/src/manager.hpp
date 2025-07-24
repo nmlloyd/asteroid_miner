@@ -83,4 +83,5 @@ class Manager
         float maxMineDist = 8;//in tiles
         std::vector<Pickaxe> pickaxes;
         int Money =0;
+        Shope shop;
 };

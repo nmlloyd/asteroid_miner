@@ -11,6 +11,7 @@ Manager::Manager()
 void Manager::Start()
 {
 
+    shop=Shope();
     // jumpscare = true;
 
     widePutinWalkingAnim.animation = LoadImageAnim("Graphics/wide_putin_walking.gif", &widePutinWalkingAnim.frames);
@@ -108,6 +109,8 @@ void Manager::Draw()
     string str = "Cash: " + to_string(Money);
     DrawTextEx(font ,str.c_str(), {0,120}, 30, 3,YELLOW);
     
+    shop.draw();
+
     computerUI.Draw();//draw computer ui if enabled
     // Vector2 mouseNormalized = Vector2Scale(Vector2Normalize(mouse.position), maxMineDist * 48);//normalixed mouse pos
     DrawMouseCursor();
@@ -223,6 +226,10 @@ void Manager::Update()
         // }
     }
 
+    if(IsKeyPressed(KEY_ENTER)){
+        shop.shopActive=false;
+    }
+
     if(IsKeyPressed(KEY_F1))
     {
         showDebug = !showDebug;//toggle debug
@@ -243,7 +250,7 @@ void Manager::Update()
             //ChangeScene(1);//starship
             Money +=10;
     }
-    if (IsKeyPressed(KEY_B)&&showDebug){
+    if (IsKeyPressedRepeat(KEY_B)&&showDebug){
             Money +=10;
         }
     if(IsKeyPressed(KEY_KP_1)&&showDebug)//debug switch to default pick
@@ -332,6 +339,11 @@ void Manager::Update()
                                 cout << "Toggled computer screen" << endl;
                                 // ToggleComputerScreen();
                                 computerUI.isActiveAndEnabled = true;//only set to true, enter to escape it
+                            }
+                             else if(static_cast<OreTile>(cell.id) == OreTile::ShopThing)//check if is computer
+                            {
+                                cout << "Toggled shop" << endl;
+                                shop.shopActive = true;
                             }
                             else if(cell.id == 16)//check if is teleporter button
                             {

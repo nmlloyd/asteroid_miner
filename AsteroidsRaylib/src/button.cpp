@@ -42,7 +42,7 @@ int Button::getSpriteIndex(){
 
 void Button::draw()
 {
-    DrawTexture(sprite[getSpriteIndex()],buttonArea.x,buttonArea.y,WHITE);
+    DrawTextureEx(sprite[getSpriteIndex()], {buttonArea.x,buttonArea.y}, 0, 2, WHITE);
 }
 
 void setup(){

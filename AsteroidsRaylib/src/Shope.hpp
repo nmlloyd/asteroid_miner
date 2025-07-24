@@ -12,9 +12,11 @@ class Shope{
     Rectangle backplate;
 
     public:
-    Shope(Vector2 pos);
+    Shope();
     
     void update();
     void draw();
+
+    bool shopActive= false;
 
 };

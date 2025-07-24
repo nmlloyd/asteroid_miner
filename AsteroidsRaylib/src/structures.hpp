@@ -85,7 +85,8 @@ enum class OreTile//maps IDs to tiles
     Andreasite = 22,
     Nathanium = 23,//just nathan
     HamOre = 24,//ham
-    ForceField = 25
+    ForceField = 25,
+    ShopThing = 26
 };
 struct MiningMission//a struct for modularly adding new missions easily
 {

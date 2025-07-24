@@ -98,6 +98,9 @@ Cell::Cell()
                 case static_cast<int>(OreTile::ForceField):
                     unitTex[i] = LoadTexture("Graphics/electric_door.png");//decor
                     break;
+                case static_cast<int>(OreTile::ShopThing):
+                    unitTex[i] = LoadTexture("Graphics/Tim.png");//decor
+                    break;
             }
         }
     }
@@ -118,22 +121,44 @@ int Cell::Draw()
             id != static_cast<int>(OreTile::Trueblood)&&
             id != static_cast<int>(OreTile::Lucasite))
         {
-            DrawTextureEx(unitTex[id - 1], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
-            if(step != -1)//do nothing if not breaking
+            if(id == static_cast<int>(OreTile::ShopThing))
             {
-                if(step < 10)
+                DrawTextureEx(unitTex[id - 1], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 1, color);
+                if(step != -1)//do nothing if not breaking
                 {
-                    DrawTextureEx(unitTex[(int)(ceilf(step/5)+4)], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
-                    return 0;
+                    if(step < 10)
+                    {
+                        DrawTextureEx(unitTex[(int)(ceilf(step/5)+4)], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
+                        return 0;
+                    }
+                    else
+                    {
+                        isActiveAndEnabled = false;
+                        return 1;
+                    }
                 }
                 else
-                {
-                    isActiveAndEnabled = false;
-                    return 1;
-                }
+                    return 2;
             }
             else
-                return 2;
+            {
+                DrawTextureEx(unitTex[id - 1], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
+                if(step != -1)//do nothing if not breaking
+                {
+                    if(step < 10)
+                    {
+                        DrawTextureEx(unitTex[(int)(ceilf(step/5)+4)], {position.x + relativeTo.x, position.y + relativeTo.y}, 0, 4, color);
+                        return 0;
+                    }
+                    else
+                    {
+                        isActiveAndEnabled = false;
+                        return 1;
+                    }
+                }
+                else
+                    return 2;
+            }
         }
         else
         {
@@ -160,7 +185,7 @@ int Cell::Draw()
 }
 void Cell::DrawOutlines()
 {
-    if(isActiveAndEnabled && drawOutline)
+    if(isActiveAndEnabled && drawOutline && id != static_cast<int>(OreTile::ShopThing))
     {
         switch(outlineId)
         {
@@ -193,7 +218,12 @@ Rectangle Cell::GetCollider()//world position
         id != static_cast<int>(OreTile::Maxium)&&
         id != static_cast<int>(OreTile::Trueblood)&&
         id != static_cast<int>(OreTile::Lucasite))
-        return {position.x + relativeTo.x, position.y + relativeTo.y, (float)GetUnitSize().x, (float)GetUnitSize().y};
+    {
+        if(id != static_cast<int>(OreTile::ShopThing))
+            return {position.x + relativeTo.x, position.y + relativeTo.y, (float)GetUnitSize().x, (float)GetUnitSize().y};
+        else
+            return {position.x + relativeTo.x, position.y + relativeTo.y, (float)GetUnitSize().x/4, (float)GetUnitSize().y/4};
+    }
     else
         return {position.x + relativeTo.x, position.y + relativeTo.y, (float)GetUnitSize().x/8, (float)GetUnitSize().y/8};
 }
