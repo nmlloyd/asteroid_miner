@@ -26,9 +26,10 @@ class Manager
         int frameCounter = 0;
         int frameDelay = 3;
         int currentAnimFrame = 0;
-        unsigned char nextFrameDataOffset;
+        unsigned int nextFrameDataOffset = 0;
 
         Music music;
+        Music staticMusic;
         Mouse mouse;
         Texture2D noise;
         Animator widePutinWalkingAnim;

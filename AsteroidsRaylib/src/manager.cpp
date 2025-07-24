@@ -11,6 +11,8 @@ Manager::Manager()
 void Manager::Start()
 {
 
+    // jumpscare = true;
+
     widePutinWalkingAnim.animation = LoadImageAnim("Graphics/wide_putin_walking.gif", &widePutinWalkingAnim.frames);
     widePutinWalkingAnim.texture = LoadTextureFromImage(widePutinWalkingAnim.animation);
 
@@ -19,7 +21,7 @@ void Manager::Start()
     player = Player();
     player.transform = {{(float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, 0.0f, 1.0f};
     player.transform.position = {0, 0};
-    player.sprite = LoadTexture("Graphics/player_putin_2x4.png");
+    player.sprite = LoadTexture("Graphics/player_putin_2x3.png");
     // asteroid.position = {(float)(GetScreenWidth() )/2, (float)(GetScreenHeight() )/2};
     float halfW = player.sprite.width/2;
     float halfH = player.sprite.height/2;
@@ -73,9 +75,13 @@ void Manager::Start()
         {"Graphene Pickaxe", 5},
         {"Wilbur Pickaxe", 10}
     };
-    music = LoadMusicStream("Audio/sirenhead.mp3");
+    music = LoadMusicStream("Audio/sirenhead.mp3");//sirenhead sound effects
     PlayMusicStream(music);
     music.looping = true;
+
+    staticMusic = LoadMusicStream("Audio/static.mp3");//static effects
+    PlayMusicStream(staticMusic);
+    staticMusic.looping = true;
     
 }
 void Manager::Draw()
@@ -113,7 +119,7 @@ void Manager::Draw()
         objective = Objective::Jumpscare;
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
 
-        DrawTextureEx(noise, {(float)-GetScreenWidth() + GetRandomValue(-160, 160), (float)-GetScreenHeight() + GetRandomValue(-160, 160)}, 0, 2, {255, 255, 255, 64});
+        DrawTextureEx(noise, {(float)-GetScreenWidth() + GetRandomValue(-160, 160), (float)-GetScreenHeight() + GetRandomValue(-160, 160)}, 0, 2, {255, 255, 255, 16});//static texture for scare
         SwitchObjectiveAndDraw();
     }
     // Cell cell = Cell();
@@ -465,6 +471,7 @@ void Manager::Update()
     if(jumpscare)
     {
         UpdateMusicStream(music);
+        UpdateMusicStream(staticMusic);
     }
 
 
@@ -842,7 +849,7 @@ void Manager::DrawDebugColls()
 
 void Manager::DrawStarsBackground()
 {
-    if(player.transform.position.y < (voidDist + 3) * GetScreenWidth())//only spawn stars if outside of void
+    if(player.transform.position.y < (voidDist + 2) * GetScreenWidth())//only spawn stars if outside of void
     {
         for(int i = 0; i < stars.size(); i++)
         {
@@ -856,13 +863,20 @@ void Manager::DrawTeleportAnimationFromTime()
     if(showTeleportAnim)//teleport animation logic
     {
         float curr = GetTime() * 60;//current time
-        if(curr - startAnimTime <= animPlateauTime)//delta time between the start of anim and current time is < Plateau Time then draw full square
+        float animPlateauTimeL =  animPlateauTime; //+ animFadeTime/2;
+        if(curr - startAnimTime <= animPlateauTimeL)//delta time between the start of anim and current time is < Plateau Time then draw full square
         {
+            // if(curr - startAnimTime >= animFadeTime/2)
             DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), WHITE);
+            // else
+            // {
+            //     float val = (Clamp01((animFadeTime/2 - (curr - (startAnimTime + animPlateauTimeL))) / 60) * 255);
+            //     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {255, 255, 255, (unsigned char)val});
+            // }
         }
         else //draw rect based on time since anim start + plateau time
         {
-            float val = (Clamp01((animFadeTime - (curr - (startAnimTime + animPlateauTime))) / 60) * 255);
+            float val = (Clamp01((animFadeTime - (curr - (startAnimTime + animPlateauTimeL))) / 60) * 255);
             DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {255, 255, 255, (unsigned char)val});
             if(val <= 0)//end anim
             {
