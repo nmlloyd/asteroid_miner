@@ -124,8 +124,11 @@ void Manager::Draw()
         DrawTextureEx(noise, {(float)-GetScreenWidth() + GetRandomValue(-160, 160), (float)-GetScreenHeight() + GetRandomValue(-160, 160)}, 0, 2, {255, 255, 255, 16});//static texture for scare
         SwitchObjectiveAndDraw();
     }
+<<<<<<< HEAD
 
     // shope.draw();
+=======
+>>>>>>> 1639ee2586c13c1c7b946a46f42c3689f641c8ea
     // Cell cell = Cell();
     // cell.position = {1280, 800};
     // cell.Draw();
@@ -505,7 +508,6 @@ void Manager::Update()
     //     cout <<"Cell size: " << ast.cells.size()<<endl;
     //     cout <<"Texture ID: "<< ast.cells[10].unitTex->id<<endl;
     // }
-
 }
 
 
@@ -775,7 +777,7 @@ void Manager::SetRandomMission()
         case 4:
             randomMission.oreToMine = OreTile::Trueblood;
             amountToMine *= 5;
-            randomMission.text = "Lucasium-T";
+            randomMission.text = "Truebloodium";
             break;
         case 5:
             randomMission.oreToMine = OreTile::Lucasite;
@@ -930,7 +932,7 @@ void Manager::SwitchObjectiveAndDraw()
             break;
         case Objective::VoidWarn2:
             DrawTextEx(font, "FATAL ERR0R:", {10, 10}, 30, 3, {255, 100, 100, 255});
-            DrawTextEx(font, "System Failure", {10, 40}, 30, 3, {255, 50, 50, 255});//light red
+            DrawTextEx(font, "System Failure", {10, 40}, 50, 7, {255, 50, 50, 255});//light red
             break;
         case Objective::VoidWarn3:
             DrawTextEx(font, "0xE24F63C2", {10, 10}, 30, 15, RED);
