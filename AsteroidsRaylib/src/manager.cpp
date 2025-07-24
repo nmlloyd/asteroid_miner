@@ -118,6 +118,7 @@ void Manager::Draw()
     DrawTeleportAnimationFromTime();
     if(jumpscare)
     {
+        
         objective = Objective::Jumpscare;
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
 
