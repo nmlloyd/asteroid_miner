@@ -11,7 +11,7 @@ Texture2D Shope::sprite = {};
 Shope::Shope(Vector2 pos){
     if(sprite.id==0){
         Image img = LoadImage("Graphics/shop.png");
-        ImageResizeNN(&img, GetScreenWidth()/2, GetScreenHeight()/2);
+        ImageResizeNN(&img, GetScreenWidth()/4, GetScreenHeight()/4);
         sprite = LoadTextureFromImage(img);
     }
 
