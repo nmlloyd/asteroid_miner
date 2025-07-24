@@ -105,8 +105,8 @@ void Manager::Draw()
     // {
     //     DrawRectangle(0, 0, 1000, 1000, GREEN);
     // }
-    string str = "Butt Tokens: " + to_string(Money);
-    DrawText(str.c_str(), 0,120,30,YELLOW);
+    string str = "Cash: " + to_string(Money);
+    DrawTextEx(font ,str.c_str(), {0,120}, 30, 3,YELLOW);
     
     computerUI.Draw();//draw computer ui if enabled
     // Vector2 mouseNormalized = Vector2Scale(Vector2Normalize(mouse.position), maxMineDist * 48);//normalixed mouse pos
