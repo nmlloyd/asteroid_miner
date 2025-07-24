@@ -127,7 +127,6 @@ void Manager::Draw()
     // Cell cell = Cell();
     // cell.position = {1280, 800};
     // cell.Draw();
-    
 }
 void Manager::Update()
 {
