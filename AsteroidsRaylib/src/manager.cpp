@@ -2,142 +2,26 @@
 #include <iostream>
 #include <cmath>
 #include <fstream> 
+#include <raymath.h>
 using namespace std;
 Manager::Manager()
 {
     
 }
-
-// void Manager::UpdateLighting(std::vector<Light> additionalLights, Asteroid& asteroid)
-// {
-//     Image calculatedShading = GenImageColor(GetScreenWidth()*2, GetScreenWidth()*2, {0, 255, 0, 127});
-//     // Color* pixels = (Color*)calculatedShading.data;
-//     for(auto& vec_ : asteroid.cells)
-//     {
-//         if(vec_.isActiveAndEnabled)
-//         {
-//         // position.x - (float)GetScreenWidth()/2, position.y - (float)GetScreenWidth()/2
-//             Vector2 pixelVec = {vec_.position.x, vec_.position.y};
-//             for(int x = 0; x < 48; x++)
-//             {
-//                 for(int y = 0; y < 48; y++)
-//                 {
-//                     int a = 0.5 * 255;//alpha channel
-//                     Vector2 newPixelVec = {(int)(pixelVec.x + x + GetScreenWidth()/2), (int)(pixelVec.y + y + GetScreenWidth()/2)};//{(int)(pixelVec.x + GetScreenWidth()/2 + x), (int)(pixelVec.y + GetScreenWidth()/2 + y)};
-//                     // std::cout<<"X: "<<newPixelVec.x << "Y: " << newPixelVec.y << std::endl;
-//                     ImageDrawPixel(&calculatedShading, newPixelVec.x, newPixelVec.y, {255, 0, 0, (unsigned char)a});
-//                     //DrawRectangleV({newPixelVec.x + asteroid.topLeftCorner.x, newPixelVec.y + asteroid.topLeftCorner.y}, {48, 48}, WHITE);
-//                 }
-//             }
-//         }
-//     }
-//     asteroid.shading = LoadTextureFromImage(calculatedShading);
-//     UnloadImage(calculatedShading);
-// }
-
-void Manager::GenerateAsteroidsGrid(Vector2 positionInScreenWidths)
-{
-    int rnd = GetScreenWidth()/2;
-    // float gridX = GetScreenWidth();//480.0f;
-    // float gridY = GetScreenHeight();
-    int rx = GetRandomValue(-rnd, rnd);
-    int ry = GetRandomValue(-rnd, rnd);
-    Vector2 scvec = {(positionInScreenWidths.x * GetScreenWidth()*2), (positionInScreenWidths.y * GetScreenWidth()*2)};
-    Vector2 vec = {rx + (positionInScreenWidths.x * GetScreenWidth()*2), ry + (positionInScreenWidths.y * GetScreenWidth()*2)};
-
-    bool foundCopy = false;
-    for(auto& fieldNode : field)
-    {
-        if(fieldNode.gridPosition.x == scvec.x && fieldNode.gridPosition.y == scvec.y)//found copy
-        {
-            foundCopy = true;
-            break;
-        }
-
-    }
-    if(!foundCopy)
-    {
-        Asteroid ast = Asteroid(vec);
-        ast.gridPosition = scvec;
-        if(ast.isActiveAndEnabled)
-            // ast.UpdateLighting({});
-        field.push_back(ast);
-    }
-}
-
-vector<Cell> Manager::LoadStructureFromFile(std::string fileName)
-{
-    int w = 0;
-    int h = 0;
-    Vector2 pos = {48, 48};
-    int outline = 1;
-    int y = 0;//line counter
-    vector<Cell> cells {};
-
-    std::string line;
-    std::ifstream fptr("Assets/" + fileName);
-    std::getline(fptr, line);
-    while (std::getline(fptr, line)) //iterate through each line
-    {
-        if(line[0] == 'm')//dimensions
-        {
-            w = line[1] - '0';
-            h = line[2] - '0';
-            // std::cout << "Width: " << w << "  Height: " << h << std::endl;
-        }
-        else if(line[0] == 'o')//outline ID
-        {
-            outline = line[1] - '0';
-            // std::cout << "Outline ID: " << outline << std::endl;
-        }
-        else if(line[0] == 'x')//position x
-        {
-            pos.x *= (line[1] - '0');
-            // std::cout << "Outline ID: " << outline << std::endl;
-        }
-        else if(line[0] == 'y')//position y
-        {
-            pos.y *= (line[1] - '0');
-            // std::cout << "Outline ID: " << outline << std::endl;
-        }
-        else //regular line
-        {
-            for(int i = 0; i < line.size(); i++)
-            {
-                Cell cell = Cell();
-                cell.outlineId = outline;//set outline
-                if(line[i] != ' ' && line[i] > 47)//is an ID
-                {
-                    // cout<<"Index: "<< i<<endl;
-                    // if(line[i] - '0' + 1 == 15)//is cell
-                    // {
-                    //     cout<<":("<<endl;
-                    // }
-                    cell.id = line[i] - '0' + 1;//set cell ID
-                    cell.position = {(float)(i) * 48 + pos.x, (float)y * 48 + pos.y};//set position based on the lines of the file and the position of the characters
-                    cell.allowBreaking = false;
-                    cells.push_back(cell);
-                }
-                // else //empty space
-                // {
-
-                // }
-            }
-            y++;
-            // std::cout << line << std::endl;
-        }
-    }
-    return cells;
-}
-
 void Manager::Start()
 {
 
+    // jumpscare = true;
+
+    widePutinWalkingAnim.animation = LoadImageAnim("Graphics/wide_putin_walking.gif", &widePutinWalkingAnim.frames);
+    widePutinWalkingAnim.texture = LoadTextureFromImage(widePutinWalkingAnim.animation);
+
     font = LoadFont("Font/monogram.ttf");
+    noise = LoadTexture("Graphics/red_noise.png");
     player = Player();
     player.transform = {{(float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, 0.0f, 1.0f};
     player.transform.position = {0, 0};
-    player.sprite = LoadTexture("Graphics/player_putin_2x4.png");
+    player.sprite = LoadTexture("Graphics/player_putin_2x3.png");
     // asteroid.position = {(float)(GetScreenWidth() )/2, (float)(GetScreenHeight() )/2};
     float halfW = player.sprite.width/2;
     float halfH = player.sprite.height/2;
@@ -180,140 +64,63 @@ void Manager::Start()
     }
 
 
+    // objective = Objective::Jumpscare;
+    // jumpscare = true;
+
     objective = Objective::GoToComputer;
+    pickaxes = 
+    {
+        {"Stone Pickaxe", 1},
+        {"Wolfram Pickaxe", 2},
+        {"Graphene Pickaxe", 5},
+        {"Wilbur Pickaxe", 10}
+    };
+    music = LoadMusicStream("Audio/sirenhead.mp3");//sirenhead sound effects
+    PlayMusicStream(music);
+    music.looping = true;
+
+    staticMusic = LoadMusicStream("Audio/static.mp3");//static effects
+    PlayMusicStream(staticMusic);
+    staticMusic.looping = true;
     
 }
-void Manager::DestroyInactiveStars()
-{
-    // for(auto i = stars.begin(); i != stars.end();)
-    // {
-    //     if(!i->isActive)
-    //         i = stars.erase(i);
-    //     else
-    //         i++;
-    // }
-}
-
 void Manager::Draw()
 {
-    for(int i = 0; i < stars.size(); i++)
-    {
-        stars[i].Draw();
-    } 
+    DrawStarsBackground();
+
+
     BeginMode2D(camera);
-        // int rnd = 60;
-        // float gridX = 123.0f;
-        // float gridY = 123.0f;
-        // for (int y = 0; y < ceilf(GetScreenHeight()/gridY); y++)
-        // {
-        //     for (int x = 0; x < ceilf(GetScreenWidth()/gridX); x++)
-        //     {
-        //         int rx = GetRandomValue(-rnd, rnd);
-        //         int ry = GetRandomValue(-rnd, rnd);
-        //         Vector2 vec = {x*gridX + rx, y*gridY + ry};
-        //         stars.push_back(vec);
-        //     }
-        // }
-        for(auto& ast : field)
-        {
-            if(sqrt(pow(ast.position.x - player.transform.position.x, 2) + pow(ast.position.y - player.transform.position.y, 2)) >= GetScreenWidth()*4)
-                ast.isActiveAndEnabled = false;
-            else
-                ast.isActiveAndEnabled = true;
-            if(ast.isActiveAndEnabled)
-            {
-                ast.Draw();
-                // DrawRectangle(ast.position.x - (float)GetScreenWidth()/2, ast.position.y - (float)GetScreenWidth()/2, (float)GetScreenWidth()*2, (float)GetScreenWidth()*2, {0, 0, 255, 127});
-                // for(auto& pixel : ast.shading)
-                // {
-                //     DrawPixelV(pixel.position, {255, 0, 0, (unsigned char)roundf(pixel.alpha * 255)});
-                //     // std::cout << pixel.position.x << pixel.position.y << std::endl;
-                // }
-            }
-            if(showDebug)
-            {
-                for(auto& cell : ast.cells)
-                {
-                    // cout << cell.isActiveAndEnabled << endl;
-                    DrawRectangleRec(cell.GetCollider(), WHITE);//draw debug colliders
-                }
-            }
-        }
-        if(showDebug)
-        {
-            DrawRectangleRec(player.GetCollider(), PURPLE);
-            Vector2 worldPosButton = GetScreenToWorld2D({computerUI.GetButtonCollider().x, computerUI.GetButtonCollider().y}, camera);
-            DrawRectangleRec({worldPosButton.x, worldPosButton.y, computerUI.GetButtonCollider().width, computerUI.GetButtonCollider().height}, RED);
-                    
-        }
-        // asteroid.Draw();
+        DrawAsteroidField();
+        DrawDebugColls();
         player.Draw();
-
-        
-        // if(IsKeyPressed(KEY_B))
-        // {
-        //     for(auto& asteroid : field)
-        //     {
-        //         if(asteroid.isActiveAndEnabled)
-        //             asteroid.UpdateLighting({});
-        //     }
-        //         // for(auto& cell : field[0].cells)
-        //         // {
-        //         //     std::cout << "Cell position: " << cell.position.x << ", " << cell.position.y << std::endl;
-        //         // }
-        // }
-        // // BeginBlendMode(BLEND_MULTIPLIED);
-        //     // DrawTexture(shading, );
-        // EndBlendMode();
+        if(showDebug)
+            DrawRectangleRec({debugPosition.x * GetScreenWidth(), debugPosition.y * GetScreenWidth(), 120, 120}, PURPLE);
     EndMode2D();
-    string str = "Find and Collect " + to_string(mission.quantity) + " " + mission.text;
-    switch (objective)//draw objective in top left
-    {
-        case Objective::BeamDown:
-            DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
-            DrawTextEx(font, "Beam down to the Asteroid Belt", {10, 40}, 30, 3, {100, 100, 255, 255});//light blue
-            break;
-        case Objective::CompleteMission:
-            // switch(mission.oreToMine)
-            // {
-            //     case OreTile::Putin:
 
-            DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
-            DrawTextEx(font, str.c_str(), {10, 40}, 30, 3, {180, 255, 180, 255});//light green
-                    // break;
-            // }
-            break;
-        case Objective::GoToComputer:
-            DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
-            DrawTextEx(font, "Go to the Computer to start the next mission", {10, 40}, 30, 3, WHITE);
-            break;
-        case Objective::ReturnToBase:
-            DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
-            DrawTextEx(font, "Return to the Mothership\n[Press F2]", {10, 40}, 30, 3, {255, 50, 50, 255});//light red
-            break;
-    }
 
+    SwitchObjectiveAndDraw();
+    SwitchPickaxeAndDraw();
+
+    // if(jumpscare)
+    // {
+    //     DrawRectangle(0, 0, 1000, 1000, GREEN);
+    // }
 
     computerUI.Draw();//draw computer ui if enabled
-    DrawRectangle(mouse.position.x, mouse.position.y, 10, 10, RED);//Draw mouse cursor
+    // Vector2 mouseNormalized = Vector2Scale(Vector2Normalize(mouse.position), maxMineDist * 48);//normalixed mouse pos
+    DrawMouseCursor();
 
 
-    if(showTeleportAnim)//teleport animation logic
+    DrawTexture(widePutinWalkingAnim.texture, GetScreenWidth() - widePutinWalkingAnim.texture.width, 0, WHITE);
+
+    DrawTeleportAnimationFromTime();
+    if(jumpscare)
     {
-        float curr = GetTime() * 60;//current time
-        if(curr - startAnimTime <= animPlateauTime)//delta time between the start of anim and current time is < Plateau Time then draw full square
-        {
-            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), WHITE);
-        }
-        else //draw rect based on time since anim start + plateau time
-        {
-            float val = (Clamp01((animFadeTime - (curr - (startAnimTime + animPlateauTime))) / 60) * 255);
-            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {255, 255, 255, (unsigned char)val});
-            if(val <= 0)//end anim
-            {
-                showTeleportAnim = false;
-            }
-        }
+        objective = Objective::Jumpscare;
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
+
+        DrawTextureEx(noise, {(float)-GetScreenWidth() + GetRandomValue(-160, 160), (float)-GetScreenHeight() + GetRandomValue(-160, 160)}, 0, 2, {255, 255, 255, 16});//static texture for scare
+        SwitchObjectiveAndDraw();
     }
 
     shope.draw();
@@ -325,6 +132,7 @@ void Manager::Update()
 {
     bool isFreeCam = false;
     bool reflectedThisFrame = false;
+    mineSpeed = pickaxes[static_cast<int>(player.pickaxe)].miningSpeed;
 
     mouse.Update();
 
@@ -354,6 +162,10 @@ void Manager::Update()
         {
             player.velocity.y = 0;
         }
+        if(player.velocity.x != 0 || player.velocity.y != 0)//moving in at least one direction
+        {
+
+        }
     }
     else
     {
@@ -361,20 +173,44 @@ void Manager::Update()
         if(IsKeyDown(KEY_A))
         {
             player.velocity.x -= player.speed/3;
+            movedThisFrame = true;
         }
         else if(IsKeyDown(KEY_D))
         {
             player.velocity.x += player.speed/3;
+            movedThisFrame = true;
         }
         if(IsKeyDown(KEY_W))
         {
             player.velocity.y -= player.speed/3;
+            movedThisFrame = true;
         }
         else if(IsKeyDown(KEY_S))
         {
             player.velocity.y += player.speed/3;
+            movedThisFrame = true;
         }
-        
+        if(movedThisFrame)
+        {
+            frameCounter++;
+            if (frameCounter >= frameDelay)
+            {
+                // Move to next frame
+                // NOTE: If final frame is reached we return to first frame
+                currentAnimFrame++;
+                if (currentAnimFrame >= widePutinWalkingAnim.frames) currentAnimFrame = 0;
+
+                // Get memory offset position for next frame data in image.data
+                nextFrameDataOffset = widePutinWalkingAnim.animation.width * widePutinWalkingAnim.animation.height * 4 * currentAnimFrame;
+
+                // Update GPU texture data with next frame image data
+                // WARNING: Data size (frame size) and pixel format must match already created texture
+                UpdateTexture(widePutinWalkingAnim.texture, ((unsigned char *)widePutinWalkingAnim.animation.data) + nextFrameDataOffset);
+
+                frameCounter = 0;
+            }
+        }
+        movedThisFrame = false;
         // if(abs(player.velocity.x) > player.speed)
         // {
         //     player.velocity.x = player.speed;
@@ -389,8 +225,9 @@ void Manager::Update()
     {
         showDebug = !showDebug;//toggle debug
     }
-    if(IsKeyPressed(KEY_F2) && objective == Objective::ReturnToBase)//debug switch scenes
+    if(IsKeyPressed(KEY_F2) && (objective == Objective::ReturnToBase || objective == Objective::Jumpscare))//debug switch scenes
     {
+        jumpscare = false;
         // if(scene == Scenes::Base)
         //     ChangeScene(Scenes::Field);//asteroid field
         if(scene == Scenes::Field)//spaceship
@@ -403,6 +240,22 @@ void Manager::Update()
         }
             //ChangeScene(1);//starship
     }
+    if(IsKeyPressed(KEY_KP_1))//debug switch to default pick
+    {
+        player.pickaxe = PickaxeType::Default;
+    }
+    else if(IsKeyPressed(KEY_KP_2))//debug switch to medium q pick
+    {
+        player.pickaxe = PickaxeType::Epic;
+    }
+    else if(IsKeyPressed(KEY_KP_3))//debug switch to LEGENDARY pick
+    {
+        player.pickaxe = PickaxeType::Legendary;
+    }
+    else if(IsKeyPressed(KEY_KP_4))//debug switch to wilbur pick
+    {
+        player.pickaxe = PickaxeType::Wilbur;
+    }
 
     // double magnitude = sqrt(pow(player.velocity.x, 2) + pow(player.velocity.y, 2));
     // player.velocity.x /= magnitude;
@@ -414,8 +267,11 @@ void Manager::Update()
     }
     else
     {
-        player.velocity.y = Clamp(-player.speed * 60, player.speed * 60, player.velocity.y);
-        player.velocity.x = Clamp(-player.speed * 60, player.speed * 60, player.velocity.x);
+        if(!showDebug)
+        {
+            player.velocity.y = Clamp(-player.speed * 60, player.speed * 60, player.velocity.y);
+            player.velocity.x = Clamp(-player.speed * 60, player.speed * 60, player.velocity.x);
+        }
     }
     // else
     // {
@@ -446,12 +302,11 @@ void Manager::Update()
                         // std::cout << cell.GetCollider().x << ", " << cell.GetCollider().y << ", " << cell.GetCollider().width << ", " << cell.GetCollider().height << std::endl;
                         if(cell.isActiveAndEnabled && CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), (cell.GetCollider())))
                         {
-                            if(cell.allowBreaking)
+                            if(cell.allowBreaking && canMine)
                             {
                                 // std::cout<<"Rectangle:"<<"X: "<<cell.GetCollider().x<<"Y: "<<cell.GetCollider().y<<"W: "<<cell.GetCollider().width<<"H: "<<cell.GetCollider().height<<std::endl;
-                                float mineSpeed = 1.0f;
                                 cell.step += mineSpeed;
-                                if(cell.step > 2 && static_cast<OreTile>(cell.id) == mission.oreToMine)//cell is broken and the tile broken is the ore you are mining
+                                if(cell.step >= 10 && static_cast<OreTile>(cell.id) == mission.oreToMine)//cell is broken and the tile broken is the ore you are mining
                                 {
                                     mission.quantity -= 1;//subtract one from the quantity
                                 }
@@ -466,7 +321,7 @@ void Manager::Update()
                             else if(cell.id == 16)//check if is teleporter button
                             {
                                 // field.clear();
-                                if(objective == Objective::BeamDown)//check if you went to the computer
+                                if(objective == Objective::BeamDown && !computerUI.isActiveAndEnabled)//check if you went to the computer
                                 {
                                     objective = Objective::CompleteMission;//change objective
                                     startAnimTime = (GetTime() * 60);
@@ -577,8 +432,28 @@ void Manager::Update()
 
     player.Update();
 
-    Vector2 playerScreenPos = {floorf(player.transform.position.x / GetScreenWidth()), floorf(player.transform.position.y / GetScreenWidth())};
-
+    Vector2 playerScreenPos = {floorf(player.transform.position.x / (GetScreenWidth() * 2)), floorf(player.transform.position.y / (GetScreenWidth() * 2))};
+    Vector2 playerScreenPos2 = {floorf(player.transform.position.x / (GetScreenWidth() )), floorf(player.transform.position.y / (GetScreenWidth() ))};
+    debugPosition = playerScreenPos;//debug
+    if(playerScreenPos2.y >= voidDist)//player is in void
+    {
+        objective = Objective::VoidWarn1;
+    }
+    if(playerScreenPos2.y >= voidDist + 2)//player is in void, disable stars
+    {
+        objective = Objective::VoidWarn2;
+    }
+    if(playerScreenPos2.y >= voidDist  + 4)//player is in void, enable music
+    {
+        UpdateMusicStream(music);
+        objective = Objective::VoidWarn3;
+    }
+    if(playerScreenPos2.y >= voidDist  + 6)//player is in purgatory
+    {
+        jumpscare = true;
+        field.clear();
+    }
+    // cout << "X" << playerScreenPos.x << "Y" << playerScreenPos.y << endl;
 
     if(scene == Scenes::Field)
     {
@@ -595,10 +470,20 @@ void Manager::Update()
     // }
 
 
+    if(jumpscare)
+    {
+        UpdateMusicStream(music);
+        UpdateMusicStream(staticMusic);
+    }
 
 
     // asteroid.Update();
-    camera.zoom = expf(logf(camera.zoom) + ((float)GetMouseWheelMove()*0.1f));
+
+
+    if(!showDebug)
+        camera.zoom = Clamp(0.5, 128, expf(logf(camera.zoom) + ((float)GetMouseWheelMove()*0.1f)));
+    else
+        camera.zoom = expf(logf(camera.zoom) + ((float)GetMouseWheelMove()*0.1f));
     camera.target = { player.transform.position.x + halfW, player.transform.position.y + halfH };
 
     // DestroyInactiveStars();
@@ -615,6 +500,116 @@ void Manager::Update()
     //     cout <<"Texture ID: "<< ast.cells[10].unitTex->id<<endl;
     // }
 
+}
+
+
+
+
+//==================================
+//      ALL NON-PUBLIC FUNCS
+//==================================
+
+void Manager::GenerateAsteroidsGrid(Vector2 positionInScreenWidthsTimesTwo)
+{
+    if(positionInScreenWidthsTimesTwo.y < voidDist/2)//     16 // 16 // 16
+    {
+        int rnd = GetScreenWidth()/2;
+        // float gridX = GetScreenWidth();//480.0f;
+        // float gridY = GetScreenHeight();
+        int rx = GetRandomValue(-rnd, rnd);
+        int ry = GetRandomValue(-rnd, rnd);
+        Vector2 scvec = {(positionInScreenWidthsTimesTwo.x * GetScreenWidth()*2), (positionInScreenWidthsTimesTwo.y * GetScreenWidth()*2)};
+        Vector2 vec = {rx + (positionInScreenWidthsTimesTwo.x * GetScreenWidth()*2), ry + (positionInScreenWidthsTimesTwo.y * GetScreenWidth()*2)};
+
+        bool foundCopy = false;
+        for(auto& fieldNode : field)
+        {
+            if(fieldNode.gridPosition.x == scvec.x && fieldNode.gridPosition.y == scvec.y)//found copy
+            {
+                foundCopy = true;
+                break;
+            }
+
+        }
+        if(!foundCopy)
+        {
+            Asteroid ast = Asteroid(vec);
+            ast.gridPosition = scvec;
+            if(ast.isActiveAndEnabled)
+                // ast.UpdateLighting({});
+            field.push_back(ast);
+        }
+    }
+    else
+    {
+        //void
+
+    }
+}
+
+vector<Cell> Manager::LoadStructureFromFile(std::string fileName)
+{
+    int w = 0;
+    int h = 0;
+    Vector2 pos = {48, 48};
+    int outline = 1;
+    int y = 0;//line counter
+    vector<Cell> cells {};
+
+    std::string line;
+    std::ifstream fptr("Assets/" + fileName);
+    std::getline(fptr, line);
+    while (std::getline(fptr, line)) //iterate through each line
+    {
+        if(line[0] == 'm')//dimensions
+        {
+            w = line[1] - '0';
+            h = line[2] - '0';
+            // std::cout << "Width: " << w << "  Height: " << h << std::endl;
+        }
+        else if(line[0] == 'o')//outline ID
+        {
+            outline = line[1] - '0';
+            // std::cout << "Outline ID: " << outline << std::endl;
+        }
+        else if(line[0] == 'x')//position x
+        {
+            pos.x *= (line[1] - '0');
+            // std::cout << "Outline ID: " << outline << std::endl;
+        }
+        else if(line[0] == 'y')//position y
+        {
+            pos.y *= (line[1] - '0');
+            // std::cout << "Outline ID: " << outline << std::endl;
+        }
+        else //regular line
+        {
+            for(int i = 0; i < line.size(); i++)
+            {
+                Cell cell = Cell();
+                cell.outlineId = outline;//set outline
+                if(line[i] != ' ' && line[i] > 47)//is an ID
+                {
+                    // cout<<"Index: "<< i<<endl;
+                    // if(line[i] - '0' + 1 == 15)//is cell
+                    // {
+                    //     cout<<":("<<endl;
+                    // }
+                    cell.id = line[i] - '0' + 1;//set cell ID
+                    cell.position = {(float)(i) * 48 + pos.x, (float)y * 48 + pos.y};//set position based on the lines of the file and the position of the characters
+                    cell.allowBreaking = false;
+                    cells.push_back(cell);
+                }
+                // else //empty space
+                // {
+
+                // }
+            }
+            y++;
+            // std::cout << line << std::endl;
+        }
+    }
+    return cells;
 }
 
 float Manager::Clamp01(float n)
@@ -726,7 +721,7 @@ void Manager::LoadSceneBase()
 }
 void Manager::LoadSceneField(Vector2 playerScreenPos, bool erase)
 {
-    cout<<"LoadSceneField ran"<<endl;
+    // cout<<"LoadSceneField ran"<<endl;
     if(erase)
         field.erase(field.begin(), field.end());
     //generate grid of 9 asteroids around the player
@@ -745,18 +740,19 @@ void Manager::LoadSceneField(Vector2 playerScreenPos, bool erase)
 void Manager::SetRandomMission()
 {
     MiningMission randomMission;
-    int amountToMine = GetRandomValue(1, 4);
+    int amountToMine = GetRandomValue(1, 6);
     int randomOre = GetRandomValue(0, 8);
+    int isMeteorite = GetRandomValue(0, 100);
     switch(randomOre)
     {
         case 0://putin random
             randomMission.oreToMine = OreTile::Putin;
-            amountToMine *= 10;
+            amountToMine *= 8;
             randomMission.text = "Putonium";
             break;
         case 1:
             randomMission.oreToMine = OreTile::Meddorite;
-            amountToMine *= 3;
+            amountToMine *= 4;
             randomMission.text = "Meddorite";
             break;
         case 2:
@@ -767,33 +763,40 @@ void Manager::SetRandomMission()
 
         case 3:
             randomMission.oreToMine = OreTile::Maxium;
-            amountToMine *= 6;
+            amountToMine *= 5;
             randomMission.text = "Maxium";
             break;
         case 4:
             randomMission.oreToMine = OreTile::Trueblood;
-            amountToMine *= 8;
-            randomMission.text = ("Lucasium-T");
+            amountToMine *= 5;
+            randomMission.text = "Lucasium-T";
             break;
         case 5:
             randomMission.oreToMine = OreTile::Lucasite;
-            amountToMine *= 8;
+            amountToMine *= 5;
             randomMission.text = "Lucasite";
             break;
         case 6:
             randomMission.oreToMine = OreTile::Andreasite;
-            amountToMine *= 8;
+            amountToMine *= 5;
             randomMission.text = "Andreasite";
             break;
         case 7:
             randomMission.oreToMine = OreTile::Nathanium;
-            amountToMine *= 8;
+            amountToMine *= 5;
             randomMission.text = "Nathanium";
             break;
         case 8:
             randomMission.oreToMine = OreTile::HamOre;
+            amountToMine *= 5;
             randomMission.text = "Hamzterzoid";
             break;
+    }
+    if(isMeteorite == 7)
+    {
+        randomMission.oreToMine = OreTile::MeteorCenter1;
+        amountToMine  = 100;
+        randomMission.text = "Meteorite";
     }
     randomMission.quantity = amountToMine;
     mission = randomMission;
@@ -804,4 +807,170 @@ void Manager::ToggleComputerScreen()
 {
     // if(!computerUI.isActiveAndEnabled)
     computerUI.isActiveAndEnabled = !computerUI.isActiveAndEnabled;//toggle
+}
+
+void Manager::DrawAsteroidField()
+{
+    for(auto& ast : field)
+        {
+            if(sqrt(pow(ast.position.x - player.transform.position.x, 2) + pow(ast.position.y - player.transform.position.y, 2)) >= GetScreenWidth()*4)
+                ast.isActiveAndEnabled = false;
+            else
+                ast.isActiveAndEnabled = true;
+            if(ast.isActiveAndEnabled)
+            {
+                ast.Draw();
+                // DrawRectangle(ast.position.x - (float)GetScreenWidth()/2, ast.position.y - (float)GetScreenWidth()/2, (float)GetScreenWidth()*2, (float)GetScreenWidth()*2, {0, 0, 255, 127});
+                // for(auto& pixel : ast.shading)
+                // {
+                //     DrawPixelV(pixel.position, {255, 0, 0, (unsigned char)roundf(pixel.alpha * 255)});
+                //     // std::cout << pixel.position.x << pixel.position.y << std::endl;
+                // }
+            }
+            if(showDebug)
+            {
+                for(auto& cell : ast.cells)
+                {
+                    // cout << cell.isActiveAndEnabled << endl;
+                    if(cell.isActiveAndEnabled)
+                        DrawRectangleRec(cell.GetCollider(), WHITE);//draw debug colliders
+                }
+            }
+        }
+}
+
+void Manager::DrawDebugColls()
+{
+    if(showDebug)
+    {
+        DrawRectangleRec(player.GetCollider(), PURPLE);
+        Vector2 worldPosButton = GetScreenToWorld2D({computerUI.GetButtonCollider().x, computerUI.GetButtonCollider().y}, camera);
+        DrawRectangleRec({worldPosButton.x, worldPosButton.y, computerUI.GetButtonCollider().width, computerUI.GetButtonCollider().height}, RED);
+
+    }
+}
+
+void Manager::DrawStarsBackground()
+{
+    if(player.transform.position.y < (voidDist + 2) * GetScreenWidth())//only spawn stars if outside of void
+    {
+        for(int i = 0; i < stars.size(); i++)
+        {
+            stars[i].Draw();
+        } 
+    }
+}
+
+void Manager::DrawTeleportAnimationFromTime()
+{
+    if(showTeleportAnim)//teleport animation logic
+    {
+        float curr = GetTime() * 60;//current time
+        float animPlateauTimeL =  animPlateauTime; //+ animFadeTime/2;
+        if(curr - startAnimTime <= animPlateauTimeL)//delta time between the start of anim and current time is < Plateau Time then draw full square
+        {
+            // if(curr - startAnimTime >= animFadeTime/2)
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), WHITE);
+            // else
+            // {
+            //     float val = (Clamp01((animFadeTime/2 - (curr - (startAnimTime + animPlateauTimeL))) / 60) * 255);
+            //     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {255, 255, 255, (unsigned char)val});
+            // }
+        }
+        else //draw rect based on time since anim start + plateau time
+        {
+            float val = (Clamp01((animFadeTime - (curr - (startAnimTime + animPlateauTimeL))) / 60) * 255);
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {255, 255, 255, (unsigned char)val});
+            if(val <= 0)//end anim
+            {
+                showTeleportAnim = false;
+            }
+        }
+    }
+}
+
+void Manager::SwitchObjectiveAndDraw()
+{
+    string str = "Find and Collect " + to_string(mission.quantity) + " " + mission.text;
+    switch (objective)//draw objective in top left
+    {
+        case Objective::BeamDown:
+            DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
+            DrawTextEx(font, "Beam down to the Asteroid Belt", {10, 40}, 30, 3, {100, 100, 255, 255});//light blue
+            break;
+        case Objective::CompleteMission:
+            // switch(mission.oreToMine)
+            // {
+            //     case OreTile::Putin:
+
+            DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
+            DrawTextEx(font, str.c_str(), {10, 40}, 30, 3, {180, 255, 180, 255});//light green
+                    // break;
+            // }
+            break;
+        case Objective::GoToComputer:
+            DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
+            DrawTextEx(font, "Go to the Computer to start the next mission", {10, 40}, 30, 3, WHITE);
+            break;
+        case Objective::ReturnToBase:
+            DrawTextEx(font, "Current Objective:", {10, 10}, 30, 3, WHITE);
+            DrawTextEx(font, "Return to the Mothership\n[Press F2]", {10, 40}, 30, 3, {255, 50, 50, 255});//light red
+            break;
+            
+
+        case Objective::VoidWarn1:
+            DrawTextEx(font, "WARNING:", {10, 10}, 30, 3, YELLOW);
+            DrawTextEx(font, "Spatial anomalies detected in close proximity", {10, 40}, 30, 3, {255, 100, 100, 255});//light red
+            break;
+        case Objective::VoidWarn2:
+            DrawTextEx(font, "FATAL ERR0R:", {10, 10}, 30, 3, {255, 100, 100, 255});
+            DrawTextEx(font, "System Failure", {10, 40}, 30, 3, {255, 50, 50, 255});//light red
+            break;
+        case Objective::VoidWarn3:
+            DrawTextEx(font, "0xE24F63C2", {10, 10}, 30, 15, RED);
+            DrawTextEx(font, "TURN    BACK     NOW", {10, 40}, 40, 3, RED);//light red
+            break;
+        case Objective::Jumpscare:
+            DrawTextEx(font, "  RETURN   TO   MOTHERSHIP  ?", {(float)((GetScreenWidth()-2320) / 2) + GetRandomValue(-16, 16), (float)((GetScreenHeight()-120)/2) + GetRandomValue(-16, 16)}, 120, 20, RED);//light red
+            break;
+    }
+}
+
+void Manager::SwitchPickaxeAndDraw()
+{
+    switch(player.pickaxe)
+    {
+        case PickaxeType::Default:
+            DrawTextEx(font, "Current Pickaxe:", {10, (float)GetScreenHeight()-110}, 30, 3, WHITE);
+            DrawTextEx(font, pickaxes[static_cast<int>(player.pickaxe)].name.c_str(), {10, (float)GetScreenHeight()-80}, 30, 3, WHITE);
+            break;
+        case PickaxeType::Epic:
+            DrawTextEx(font, "Current Pickaxe:", {10, (float)GetScreenHeight()-110}, 30, 3, WHITE);
+            DrawTextEx(font, pickaxes[static_cast<int>(player.pickaxe)].name.c_str(), {10, (float)GetScreenHeight()-80}, 30, 3, {180, 255, 180, 255});//light green
+            break;
+        case PickaxeType::Legendary:
+            DrawTextEx(font, "Current Pickaxe:", {10, (float)GetScreenHeight()-110}, 30, 3, WHITE);
+            DrawTextEx(font, pickaxes[static_cast<int>(player.pickaxe)].name.c_str(), {10, (float)GetScreenHeight()-80}, 30, 3, {255, 120, 255, 255});//light purple
+            break;
+        case PickaxeType::Wilbur:
+            DrawTextEx(font, "Current Pickaxe:", {10, (float)GetScreenHeight()-110}, 30, 3, WHITE);
+            DrawTextEx(font, pickaxes[static_cast<int>(player.pickaxe)].name.c_str(), {10, (float)GetScreenHeight()-80}, 30, 3, RED);//BLOOD RED
+            break;
+    }
+}
+
+void Manager::DrawMouseCursor()
+{
+    float mouseMagnitude = Distance({(float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, mouse.position);
+    if(mouseMagnitude > maxMineDist * 48 || jumpscare)//mouse is outside of mine distance
+    {
+        // DrawRectangle(mouseNormalized.x + (float)GetScreenWidth()/2, mouseNormalized.y + (float)GetScreenHeight()/2, 10, 10, WHITE);//Draw mouse cursor normalized
+        DrawRectangle(mouse.position.x, mouse.position.y, 10, 10, {255, 0, 0, 127});//Draw mouse cursor out of range
+        canMine = false;
+    }
+    else
+    {
+        DrawRectangle(mouse.position.x, mouse.position.y, 10, 10, WHITE);//Draw mouse cursor
+        canMine = true;
+    }
 }

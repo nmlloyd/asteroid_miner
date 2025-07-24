@@ -2,6 +2,7 @@
 
 Mouse::Mouse()
 {
+    position= GetMousePosition();
 }
 Vector2 Mouse::GetCollider()
 {

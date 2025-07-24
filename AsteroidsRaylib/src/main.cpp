@@ -21,6 +21,7 @@ int main()
     int windowHeight = (GetMonitorHeight(GetCurrentMonitor()));
 
     InitWindow(windowWidth, windowHeight, "Asteroid Miner");
+    InitAudioDevice();
 
     SetTargetFPS(60);
 
@@ -38,4 +39,5 @@ int main()
     }
 
     CloseWindow();
+    CloseAudioDevice();
 }

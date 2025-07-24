@@ -2,6 +2,8 @@
 #include <raylib.h>
 #include <string>
 
+using namespace std;
+
 struct Transform2D
 {
     Vector2 position;
@@ -19,6 +21,27 @@ struct Vector2Bool //a struct with a point and a boolean
     float y;
     bool boolean;
 };
+struct Pickaxe
+{
+    std::string name;
+    float miningSpeed;
+};
+struct Animator //a struct with a point and a boolean
+{
+    std::string file;//file location
+    Image animation;
+    int frames = 0;
+    Texture2D texture;
+};
+
+
+enum class PickaxeType
+{
+    Default = 0,
+    Epic = 1,
+    Legendary = 2,
+    Wilbur = 3
+};
 enum class Scenes
 {
     Base,
@@ -30,7 +53,11 @@ enum class Objective
     GoToComputer,//and select next mission
     BeamDown,//go to asteroid field
     CompleteMission,//will show the mission below
-    ReturnToBase //return to the ship
+    ReturnToBase, //return to the ship
+    VoidWarn1, //enter the void
+    VoidWarn2, //far into the void
+    VoidWarn3, //good luck suckaah
+    Jumpscare //:()
 };
 enum class OreTile//maps IDs to tiles
 {
