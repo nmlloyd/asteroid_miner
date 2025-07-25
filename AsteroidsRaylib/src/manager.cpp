@@ -105,13 +105,15 @@ void Manager::Draw()
 
     SwitchObjectiveAndDraw();
     SwitchPickaxeAndDraw();
+    string str = "Score: " + to_string(numOfCompletedQuests);
+    DrawTextEx(font, str.c_str(), {(float)GetScreenWidth() - 160, (float)256}, 30, 3, GREEN);
 
     // if(jumpscare)
     // {
     //     DrawRectangle(0, 0, 1000, 1000, GREEN);
     // }
-    string str = "Cash: " + to_string(Money);
-    DrawTextEx(font ,str.c_str(), {0,120}, 30, 3,YELLOW);
+    string str2 = "Cash: " + to_string(Money);
+    DrawTextEx(font ,str2.c_str(), {0,120}, 30, 3,YELLOW);
     
     shop.draw();
 
@@ -828,6 +830,7 @@ void Manager::HandleInput()
     if(IsKeyPressed(KEY_F2) && (objective == Objective::ReturnToBase || objective == Objective::Jumpscare))//debug switch scenes
     {
         jumpscare = false;
+        numOfCompletedQuests++;
         // if(scene == Scenes::Base)
         //     ChangeScene(Scenes::Field);//asteroid field
         objective = Objective::GoToComputer;

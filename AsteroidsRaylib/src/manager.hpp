@@ -35,6 +35,8 @@ class Manager
         int currentAnimFrame = 0;
         unsigned int nextFrameDataOffset = 0;
 
+        int numOfCompletedQuests = 0;
+
         float debugSize = 4;
 
         Music main_music;
