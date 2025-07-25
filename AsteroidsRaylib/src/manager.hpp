@@ -23,6 +23,8 @@ class Manager
         bool canMine = true;
         bool jumpscare = false;
         bool movedThisFrame = false;
+        bool isFreeCam = false;
+        bool reflectedThisFrame = false;
 
         int frameCounter = 0;
         int frameDelay = 3;
@@ -40,12 +42,18 @@ class Manager
         Player player;
         int rnd = 30;
         int voidDist = 8;
+        Vector2 playerScreenPos;
         Vector2 debugPosition; //multipurpose position
         Scenes scene = Scenes::Base;
         Vector2 lastPlayerScreenPos;
         std::vector<Light> lights;
+        void CheckCollisionCells();
+        void HandleSpookyScary();
+        void HandleInput();
+        void CheckUIButton();
+        void HandlePlayerVelocity();
+        void CheckCellCollisionLoops();
         void ToggleComputerScreen();
-        void DestroyInactiveStars();
         void GenerateAsteroidsGrid(Vector2 positionInScreenWidths);
         void ChangeScene(Scenes sceneId);
         void LoadSceneBase();
