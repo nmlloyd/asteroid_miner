@@ -14,7 +14,7 @@ void MissionUI::Draw()
         DrawTextureEx(background, {0, 0}, 0, 1, GRAY);
         if(isButtonDown)
         {
-            DrawTextEx(font, "MISSION ASSIGNED\nSEE INSTRUCTIONS", {(float)(GetScreenWidth() - 704/2)/2, (float)(GetScreenHeight())/2 - 220}, 40, 4, BLACK);
+            DrawTextEx(font, "MISSION ASSIGNED\nSEE INSTRUCTIONS\n\n\n\n\n\n ENTER TO CLOSE", {(float)(GetScreenWidth() - 704/2)/2, (float)(GetScreenHeight())/2 - 220}, 40, 4, BLACK);
             DrawTextureEx(selectButtonDown, {GetButtonCollider().x, GetButtonCollider().y}, 0, uiScale, WHITE);
         }
         else
@@ -35,7 +35,7 @@ Rectangle MissionUI::GetButtonCollider()
     {
         (float)(GetScreenWidth() - selectButtonUp.width*uiScale)/2, 
         (float)(GetScreenHeight() - selectButtonUp.height*uiScale)/2, 
-        (float)selectButtonUp.width * uiScale, 
-        (float)selectButtonUp.height * uiScale
+        (float)selectButtonUp.width * uiScale / zoom, 
+        (float)selectButtonUp.height * uiScale / zoom
     };
 }

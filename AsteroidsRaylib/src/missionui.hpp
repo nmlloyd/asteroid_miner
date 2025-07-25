@@ -13,6 +13,7 @@ class MissionUI
         bool isButtonDown = false;
         MiningMission randomizedMission;
         float uiScale = 6;
+        float zoom = 1;
     private:
         Font font;
         Texture2D selectButtonUp;

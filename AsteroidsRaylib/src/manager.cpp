@@ -135,181 +135,17 @@ void Manager::Draw()
 }
 void Manager::Update()
 {
-    bool isFreeCam = false;
-    bool reflectedThisFrame = false;
+    isFreeCam = false;
+    reflectedThisFrame = false;
     mineSpeed = pickaxes[static_cast<int>(player.pickaxe)].miningSpeed;
 
     mouse.Update();
 
-    if(isFreeCam)
-    {
-        if(IsKeyDown(KEY_A))
-        {
-            player.velocity.x = -1;
-        }
-        else if(IsKeyDown(KEY_D))
-        {
-            player.velocity.x = 1;
-        }
-        else
-        {
-            player.velocity.x = 0;
-        }
-        if(IsKeyDown(KEY_W))
-        {
-            player.velocity.y = -1;
-        }
-        else if(IsKeyDown(KEY_S))
-        {
-            player.velocity.y = 1;
-        }
-        else
-        {
-            player.velocity.y = 0;
-        }
-        if(player.velocity.x != 0 || player.velocity.y != 0)//moving in at least one direction
-        {
+    HandleInput();
 
-        }
-    }
-    else
-    {
-        
-        if(IsKeyDown(KEY_A))
-        {
-            player.velocity.x -= player.speed/3;
-            movedThisFrame = true;
-        }
-        else if(IsKeyDown(KEY_D))
-        {
-            player.velocity.x += player.speed/3;
-            movedThisFrame = true;
-        }
-        if(IsKeyDown(KEY_W))
-        {
-            player.velocity.y -= player.speed/3;
-            movedThisFrame = true;
-        }
-        else if(IsKeyDown(KEY_S))
-        {
-            player.velocity.y += player.speed/3;
-            movedThisFrame = true;
-        }
-        if(movedThisFrame)
-        {
-            frameCounter++;
-            if (frameCounter >= frameDelay)
-            {
-                // Move to next frame
-                // NOTE: If final frame is reached we return to first frame
-                currentAnimFrame++;
-                if (currentAnimFrame >= widePutinWalkingAnim.frames) currentAnimFrame = 0;
-
-                // Get memory offset position for next frame data in image.data
-                nextFrameDataOffset = widePutinWalkingAnim.animation.width * widePutinWalkingAnim.animation.height * 4 * currentAnimFrame;
-
-                // Update GPU texture data with next frame image data
-                // WARNING: Data size (frame size) and pixel format must match already created texture
-                UpdateTexture(widePutinWalkingAnim.texture, ((unsigned char *)widePutinWalkingAnim.animation.data) + nextFrameDataOffset);
-
-                frameCounter = 0;
-            }
-        }
-        movedThisFrame = false;
-        // if(abs(player.velocity.x) > player.speed)
-        // {
-        //     player.velocity.x = player.speed;
-        // }
-        // if(abs(player.velocity.y) > player.speed)
-        // {
-        //     player.velocity.y = player.speed;
-        // }
-    }
-
-    if(IsKeyPressed(KEY_ENTER)){
-        shop.setShop(false);
-    }
-
-    if(IsKeyPressed(KEY_F1))
-    {
-        showDebug = !showDebug;//toggle debug
-    }
-    if(IsKeyPressed(KEY_F2) && (objective == Objective::ReturnToBase || objective == Objective::Jumpscare))//debug switch scenes
-    {
-        jumpscare = false;
-        // if(scene == Scenes::Base)
-        //     ChangeScene(Scenes::Field);//asteroid field
-        if(scene == Scenes::Field)//spaceship
-        {
-            objective = Objective::GoToComputer;
-            showTeleportAnim = true;
-            startAnimTime = GetTime() * 60;
-            ChangeScene(Scenes::Base);//return to the motherland
-            // field.clear();
-        }
-            //ChangeScene(1);//starship
-            Money +=10;
-    }
-    if ((IsKeyPressed(KEY_B) || IsKeyPressedRepeat(KEY_B))&&showDebug){
-            Money +=10;
-        }
-    if ((IsKeyPressed(KEY_N) || IsKeyPressedRepeat(KEY_N))&&showDebug){
-            Money +=9999999999999999999;
-        }
-    if(IsKeyPressed(KEY_KP_1)&&showDebug)//debug switch to default pick
-    {
-        player.pickaxe = PickaxeType::Default;
-    }
-    else if(IsKeyPressed(KEY_KP_2)&&showDebug)//debug switch to medium q pick
-    {
-        player.pickaxe = PickaxeType::Epic;
-    }
-    else if(IsKeyPressed(KEY_KP_3)&&showDebug)//debug switch to LEGENDARY pick
-    {
-        player.pickaxe = PickaxeType::Legendary;
-    }
-    else if(IsKeyPressed(KEY_KP_4)&&showDebug)//debug switch to wilbur pick
-    {
-        player.pickaxe = PickaxeType::Wilbur;
-    }
-
-    if(IsKeyPressedRepeat(KEY_EQUAL))//debug add one to debugSize
-    {
-        debugSize = Clamp(1, 256, debugSize + 1);
-    }
-    else if(IsKeyPressedRepeat(KEY_MINUS))//debug subtract one from debugSize
-    {
-        debugSize = Clamp(1, 256, debugSize - 1);
-    }
-
-    // double magnitude = sqrt(pow(player.velocity.x, 2) + pow(player.velocity.y, 2));
-    // player.velocity.x /= magnitude;
-    // player.velocity.y /= magnitude;
-    if(isFreeCam)
-    {
-        player.velocity.x *= 600 * player.speed;
-        player.velocity.y *= 600 * player.speed;
-    }
-    else
-    {
-        if(!showDebug)
-        {
-            player.velocity.y = Clamp(-player.speed * 60, player.speed * 60, player.velocity.y);
-            player.velocity.x = Clamp(-player.speed * 60, player.speed * 60, player.velocity.x);
-        }
-    }
-    // else
-    // {
-    //     player.velocity.x *= 60;
-    //     player.velocity.y *= 60;
-    // }
-    // for(auto& cell : asteroid.cells)
-    // {
-    //     if(CheckCollisionRecs(cell.GetCollider(), {player.GetCollider().x + player.velocity.x, player.GetCollider().y + player.velocity.y, player.GetCollider().width, player.GetCollider().height}))
-    //     {//will collide next frame
-    //         player.velocity = {0, 0};
-    //     }
-    // }
+    HandlePlayerVelocity();
+    
+    //start collision detection
 
     if(continueLoop) 
     {
@@ -322,22 +158,24 @@ void Manager::Update()
                     // std::cout<<"Manager::Update() cell.id: "<<cell.id<<endl;
                     if(IsMouseButtonPressed(0))
                     {
+                        // cout << "Delta: " << to_string(CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), (cell.GetCollider()))) << endl;
+                        // 
                         // std::cout << "collided with cell at position (" << cell.position.x << ", " << cell.position.y << ")" << std::endl;
                         // std::cout << "mouse: " << mouse.GetCollider().x << ", " << mouse.GetCollider().y << std::endl;
                         // std::cout << cell.GetCollider().x << ", " << cell.GetCollider().y << ", " << cell.GetCollider().width << ", " << cell.GetCollider().height << std::endl;
-                        if(cell.isActiveAndEnabled && CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), (cell.GetCollider())))
+                        if(!showDebug && cell.isActiveAndEnabled && CheckCollisionPointRec(GetScreenToWorld2D(mouse.position, camera), (cell.GetCollider())))
                         {
-                            if(cell.allowBreaking && canMine)
-                            {
-                                // std::cout<<"Rectangle:"<<"X: "<<cell.GetCollider().x<<"Y: "<<cell.GetCollider().y<<"W: "<<cell.GetCollider().width<<"H: "<<cell.GetCollider().height<<std::endl;
-                                cell.step += mineSpeed;
-                                if(cell.step >= 10 && static_cast<OreTile>(cell.id) == mission.oreToMine)//cell is broken and the tile broken is the ore you are mining
-                                {
-                                    mission.quantity -= 1;//subtract one from the quantity
-                                }
-                                // break;
-                            }
-                            else if(static_cast<OreTile>(cell.id) == OreTile::ComputerOn)//check if is computer
+                            // if(cell.allowBreaking && canMine)
+                            // {
+                            //     // std::cout<<"Rectangle:"<<"X: "<<cell.GetCollider().x<<"Y: "<<cell.GetCollider().y<<"W: "<<cell.GetCollider().width<<"H: "<<cell.GetCollider().height<<std::endl;
+                            //     cell.step += mineSpeed;
+                            //     if(cell.step >= 10 && static_cast<OreTile>(cell.id) == mission.oreToMine)//cell is broken and the tile broken is the ore you are mining
+                            //     {
+                            //         mission.quantity -= 1;//subtract one from the quantity
+                            //     }
+                            //     // break;
+                            // }
+                            if(static_cast<OreTile>(cell.id) == OreTile::ComputerOn)//check if is computer
                             {
                                 cout << "Toggled computer screen" << endl;
                                 // ToggleComputerScreen();
@@ -363,21 +201,31 @@ void Manager::Update()
                             }
                         }
                         Vector2 mpos = GetScreenToWorld2D(GetMousePosition(), camera);
-                        if(showDebug && cell.isActiveAndEnabled && CheckCollisionRecs({mpos.x, mpos.y, 48 * debugSize, 48 * debugSize}, (cell.GetCollider())))
+                        if(cell.isActiveAndEnabled && CheckCollisionRecs({mpos.x - 48, mpos.y - 48, 48 * 2, 48 * 2}, (cell.GetCollider())))
                         {
 
-                            if(cell.allowBreaking)
+                            if(cell.allowBreaking && canMine)
                             {
                                 // std::cout<<"Rectangle:"<<"X: "<<cell.GetCollider().x<<"Y: "<<cell.GetCollider().y<<"W: "<<cell.GetCollider().width<<"H: "<<cell.GetCollider().height<<std::endl;
-                                cell.step += 32;
+                                cell.step += mineSpeed;
                                 if(cell.step >= 10 && static_cast<OreTile>(cell.id) == mission.oreToMine)//cell is broken and the tile broken is the ore you are mining
                                 {
                                     mission.quantity -= 1;//subtract one from the quantity
                                 }
                                 // break;
                             }
+
+                            // if(cell.allowBreaking)
+                            // {
+                            //     // std::cout<<"Rectangle:"<<"X: "<<cell.GetCollider().x<<"Y: "<<cell.GetCollider().y<<"W: "<<cell.GetCollider().width<<"H: "<<cell.GetCollider().height<<std::endl;
+                            //     cell.step += 32;
+                            //     if(cell.step >= 10 && static_cast<OreTile>(cell.id) == mission.oreToMine)//cell is broken and the tile broken is the ore you are mining
+                            //     {
+                            //         mission.quantity -= 1;//subtract one from the quantity
+                            //     }
+                            //     // break;
+                            // }
                         }
-                        
                     }
                     if (cell.allowCollisions && cell.isActiveAndEnabled && !reflectedThisFrame)
                     {
@@ -456,6 +304,8 @@ void Manager::Update()
     }
     continueLoop = true;
 
+    //end collision detection
+
     Vector2 worldPosButton = GetScreenToWorld2D({computerUI.GetButtonCollider().x, computerUI.GetButtonCollider().y}, camera);
     if(computerUI.isActiveAndEnabled)//clicked button
     {
@@ -531,7 +381,7 @@ void Manager::Update()
     else
         camera.zoom = expf(logf(camera.zoom) + ((float)GetMouseWheelMove()*0.1f));
     camera.target = { player.transform.position.x + halfW, player.transform.position.y + halfH };
-
+    computerUI.zoom = camera.zoom;
     // DestroyInactiveStars();
     // if(IsKeyPressed(KEY_L))
     // {
@@ -722,8 +572,8 @@ void Manager::ChangeScene(Scenes sceneId)
 
 void Manager::LoadSceneBase()
 {
-    field.clear();
-
+    // field.clear();
+    field.erase(field.begin(), field.end());
     
     SetRandomMission();//create new random mission
     computerUI.randomizedMission = mission;//set ui mission for use later
@@ -807,19 +657,19 @@ void Manager::LoadSceneField(Vector2 playerScreenPos, bool erase)
 void Manager::SetRandomMission()
 {
     MiningMission randomMission;
-    int amountToMine = GetRandomValue(1, 6);
+    int amountToMine = GetRandomValue(1, 5);
     int randomOre = GetRandomValue(0, 8);
     int isMeteorite = GetRandomValue(0, 100);
     switch(randomOre)
     {
         case 0://putin random
             randomMission.oreToMine = OreTile::Putin;
-            amountToMine *= 8;
+            amountToMine *= 5;
             randomMission.text = "Putonium";
             break;
         case 1:
             randomMission.oreToMine = OreTile::Meddorite;
-            amountToMine *= 4;
+            amountToMine *= 3;
             randomMission.text = "Meddorite";
             break;
         case 2:
@@ -830,32 +680,31 @@ void Manager::SetRandomMission()
 
         case 3:
             randomMission.oreToMine = OreTile::Maxium;
-            amountToMine *= 5;
+            amountToMine *= 4;
             randomMission.text = "Maxium";
             break;
         case 4:
             randomMission.oreToMine = OreTile::Trueblood;
-            amountToMine *= 5;
+            amountToMine *= 4;
             randomMission.text = "Truebloodium";
             break;
         case 5:
             randomMission.oreToMine = OreTile::Lucasite;
-            amountToMine *= 5;
+            amountToMine *= 4;
             randomMission.text = "Lucasite";
             break;
         case 6:
             randomMission.oreToMine = OreTile::Andreasite;
-            amountToMine *= 5;
+            amountToMine *= 4;
             randomMission.text = "Andreasite";
             break;
         case 7:
             randomMission.oreToMine = OreTile::Nathanium;
-            amountToMine *= 5;
+            amountToMine *= 4;
             randomMission.text = "Nathanium";
             break;
         case 8:
             randomMission.oreToMine = OreTile::HamOre;
-            amountToMine *= 5;
             randomMission.text = "Hamzterzoid";
             break;
     }
@@ -869,6 +718,180 @@ void Manager::SetRandomMission()
     mission = randomMission;
 }
 
+void Manager::HandleInput()
+{
+    if(isFreeCam)
+    {
+        if(IsKeyDown(KEY_A))
+        {
+            player.velocity.x = -1;
+        }
+        else if(IsKeyDown(KEY_D))
+        {
+            player.velocity.x = 1;
+        }
+        else
+        {
+            player.velocity.x = 0;
+        }
+        if(IsKeyDown(KEY_W))
+        {
+            player.velocity.y = -1;
+        }
+        else if(IsKeyDown(KEY_S))
+        {
+            player.velocity.y = 1;
+        }
+        else
+        {
+            player.velocity.y = 0;
+        }
+        // if(player.velocity.x != 0 || player.velocity.y != 0)//moving in at least one direction
+        // {
+
+        // }
+    }
+    else
+    {
+        
+        if(IsKeyDown(KEY_A))
+        {
+            player.velocity.x -= player.speed/3;
+            movedThisFrame = true;
+        }
+        else if(IsKeyDown(KEY_D))
+        {
+            player.velocity.x += player.speed/3;
+            movedThisFrame = true;
+        }
+        if(IsKeyDown(KEY_W))
+        {
+            player.velocity.y -= player.speed/3;
+            movedThisFrame = true;
+        }
+        else if(IsKeyDown(KEY_S))
+        {
+            player.velocity.y += player.speed/3;
+            movedThisFrame = true;
+        }
+        if(movedThisFrame)
+        {
+            frameCounter++;
+            if (frameCounter >= frameDelay)
+            {
+                // Move to next frame
+                // NOTE: If final frame is reached we return to first frame
+                currentAnimFrame++;
+                if (currentAnimFrame >= widePutinWalkingAnim.frames) currentAnimFrame = 0;
+
+                // Get memory offset position for next frame data in image.data
+                nextFrameDataOffset = widePutinWalkingAnim.animation.width * widePutinWalkingAnim.animation.height * 4 * currentAnimFrame;
+
+                // Update GPU texture data with next frame image data
+                // WARNING: Data size (frame size) and pixel format must match already created texture
+                UpdateTexture(widePutinWalkingAnim.texture, ((unsigned char *)widePutinWalkingAnim.animation.data) + nextFrameDataOffset);
+
+                frameCounter = 0;
+            }
+        }
+        movedThisFrame = false;
+        // if(abs(player.velocity.x) > player.speed)
+        // {
+        //     player.velocity.x = player.speed;
+        // }
+        // if(abs(player.velocity.y) > player.speed)
+        // {
+        //     player.velocity.y = player.speed;
+        // }
+    }
+
+    if(IsKeyPressed(KEY_F1))
+    {
+        showDebug = !showDebug;//toggle debug
+    }
+    if(IsKeyPressed(KEY_F2) && (objective == Objective::ReturnToBase || objective == Objective::Jumpscare))//debug switch scenes
+    {
+        jumpscare = false;
+        // if(scene == Scenes::Base)
+        //     ChangeScene(Scenes::Field);//asteroid field
+        objective = Objective::GoToComputer;
+        showTeleportAnim = true;
+        startAnimTime = GetTime() * 60;
+        ChangeScene(Scenes::Base);//return to the motherland
+        // field.clear();
+        //ChangeScene(1);//starship
+        if(mission.oreToMine == OreTile::BlueOre)
+        {
+            Money += 20;
+        }
+        else if(mission.oreToMine == OreTile::Meddorite)
+        {
+            Money += 15;
+        }
+        else if(mission.oreToMine == OreTile::MeteorCenter1)
+        {
+            Money += 100;
+        }
+        else if(mission.oreToMine == OreTile::HamOre)
+        {
+            Money += 30;
+        }
+        else if(mission.oreToMine == OreTile::Putin)
+        {
+            Money += 10;
+        }
+        else
+        {
+            Money += 15;
+        }
+    }
+    if (IsKeyDown(KEY_B)&&showDebug){
+            Money += 10;
+        }
+    if(IsKeyPressed(KEY_ONE))//debug switch to default pick
+    {
+        player.pickaxe = PickaxeType::Default;
+    }
+    else if(IsKeyPressed(KEY_TWO))//debug switch to medium q pick
+    {
+        player.pickaxe = PickaxeType::Epic;
+    }
+    else if(IsKeyPressed(KEY_THREE))//debug switch to LEGENDARY pick
+    {
+        player.pickaxe = PickaxeType::Legendary;
+    }
+    else if(IsKeyPressed(KEY_FOUR))//debug switch to wilbur pick
+    {
+        player.pickaxe = PickaxeType::Wilbur;
+    }
+
+    if(IsKeyPressedRepeat(KEY_EQUAL))//debug add one to debugSize
+    {
+        debugSize = Clamp(1, 256, debugSize + 1);
+    }
+    else if(IsKeyPressedRepeat(KEY_MINUS))//debug subtract one from debugSize
+    {
+        debugSize = Clamp(1, 256, debugSize - 1);
+    }
+    
+}
+
+void Manager::HandlePlayerVelocity()
+{
+    if(isFreeCam)
+    {
+        player.velocity.x *= 600 * player.speed;
+        player.velocity.y *= 600 * player.speed;
+    }
+    else
+    {
+        if(!showDebug)
+        {
+            player.velocity.y = Clamp(-player.speed * 60, player.speed * 60, player.velocity.y);
+            player.velocity.x = Clamp(-player.speed * 60, player.speed * 60, player.velocity.x);
+        }
+    }
+}
 
 void Manager::ToggleComputerScreen()
 {
@@ -1030,15 +1053,17 @@ void Manager::SwitchPickaxeAndDraw()
 void Manager::DrawMouseCursor()
 {
     float mouseMagnitude = Distance({(float)GetScreenWidth()/2, (float)GetScreenHeight()/2}, mouse.position);
-    if(mouseMagnitude > maxMineDist * 48 || jumpscare)//mouse is outside of mine distance
+    if(mouseMagnitude > (maxMineDist * 48 * camera.zoom) || jumpscare)//mouse is outside of mine distance
     {
         // DrawRectangle(mouseNormalized.x + (float)GetScreenWidth()/2, mouseNormalized.y + (float)GetScreenHeight()/2, 10, 10, WHITE);//Draw mouse cursor normalized
         DrawRectangle(mouse.position.x, mouse.position.y, 10, 10, {255, 0, 0, 127});//Draw mouse cursor out of range
+        DrawRectangle(mouse.position.x - (48*camera.zoom), mouse.position.y - (48*camera.zoom), (48 * 2)*camera.zoom, (48 * 2)*camera.zoom, {0, 0, 255, 64});//Draw mine area
         canMine = false;
     }
     else
     {
         DrawRectangle(mouse.position.x, mouse.position.y, 10, 10, WHITE);//Draw mouse cursor
+        DrawRectangle(mouse.position.x - (48*camera.zoom), mouse.position.y - (48*camera.zoom), (48 * 2)*camera.zoom, (48 * 2)*camera.zoom, {0, 0, 255, 64});//Draw mine area
         canMine = true;
     }
 }
