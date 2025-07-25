@@ -26,6 +26,10 @@ class Manager
         bool isFreeCam = false;
         bool reflectedThisFrame = false;
 
+        bool allowEpic = false;
+        bool allowLegendary = false;
+        bool allowWilbur = false;
+
         int frameCounter = 0;
         int frameDelay = 3;
         int currentAnimFrame = 0;

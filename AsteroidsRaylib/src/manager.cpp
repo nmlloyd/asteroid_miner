@@ -402,21 +402,27 @@ void Manager::runShopUI(){
     //first check if the shop is even open
     if(shop.getOverlayState()){
         //now we wanna go through each of the buttons inside the shop
-        if(IsKeyPressed(KEY_FOUR) && Money>=100){
+        if(IsKeyPressed(KEY_FOUR) && Money>=100 && !allowWilbur){
             Money -= 100;
             player.pickaxe=PickaxeType::Wilbur;
+            allowWilbur = true;
         }
-        if(IsKeyPressed(KEY_THREE) && Money>=70){
+        if(IsKeyPressed(KEY_THREE) && Money>=70 && !allowLegendary){
             Money -= 70;
             player.pickaxe=PickaxeType::Legendary;
+            allowLegendary = true;
         }
-        if(IsKeyPressed(KEY_TWO) && Money>=30){
+        if(IsKeyPressed(KEY_TWO) && Money>=30 && !allowEpic){
             Money -= 30;
             player.pickaxe=PickaxeType::Epic;
+            allowEpic = true;
         }
         if(IsKeyPressed(KEY_ONE) && Money>=0){
             Money -= 0;
             player.pickaxe=PickaxeType::Default;
+        }
+        if(IsKeyPressed(KEY_ENTER)){
+            shop.setShop(false);
         }
         
     }
@@ -848,21 +854,24 @@ void Manager::HandleInput()
     if (IsKeyDown(KEY_B)&&showDebug){
             Money += 10;
         }
-    if(IsKeyPressed(KEY_ONE))//debug switch to default pick
+    if(IsKeyPressed(KEY_KP_1))//debug switch to default pick
     {
         player.pickaxe = PickaxeType::Default;
     }
-    else if(IsKeyPressed(KEY_TWO))//debug switch to medium q pick
+    else if(IsKeyPressed(KEY_KP_2))//debug switch to medium q pick
     {
-        player.pickaxe = PickaxeType::Epic;
+        if(allowEpic)
+            player.pickaxe = PickaxeType::Epic;
     }
-    else if(IsKeyPressed(KEY_THREE))//debug switch to LEGENDARY pick
+    else if(IsKeyPressed(KEY_KP_3))//debug switch to LEGENDARY pick
     {
-        player.pickaxe = PickaxeType::Legendary;
+        if(allowLegendary)
+            player.pickaxe = PickaxeType::Legendary;
     }
-    else if(IsKeyPressed(KEY_FOUR))//debug switch to wilbur pick
+    else if(IsKeyPressed(KEY_KP_4))//debug switch to wilbur pick
     {
-        player.pickaxe = PickaxeType::Wilbur;
+        if(allowWilbur)
+            player.pickaxe = PickaxeType::Wilbur;
     }
 
     if(IsKeyPressedRepeat(KEY_EQUAL))//debug add one to debugSize
