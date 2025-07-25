@@ -15,11 +15,13 @@ class Button{
     ButtonSpriteTypes spriteID;
     Rectangle buttonArea;
     string buttonText;
+    Color textColor;
     int getSpriteIndex();
 
     public:
     Button();
     Button(ButtonSpriteTypes spriteIDIn, Vector2 position);
+    Button(ButtonSpriteTypes spriteIDIn, Vector2 position, string buttonTextIn, Color textColorIn);
     void draw();
     void setup();
     Rectangle getButtonArea();

@@ -250,8 +250,11 @@ void Manager::Update()
             //ChangeScene(1);//starship
             Money +=10;
     }
-    if (IsKeyPressedRepeat(KEY_B)&&showDebug){
+    if ((IsKeyPressed(KEY_B) || IsKeyPressedRepeat(KEY_B))&&showDebug){
             Money +=10;
+        }
+    if ((IsKeyPressed(KEY_N) || IsKeyPressedRepeat(KEY_N))&&showDebug){
+            Money +=9999999999999999999;
         }
     if(IsKeyPressed(KEY_KP_1)&&showDebug)//debug switch to default pick
     {
@@ -549,6 +552,23 @@ void Manager::runShopUI(){
     //first check if the shop is even open
     if(shop.getOverlayState()){
         //now we wanna go through each of the buttons inside the shop
+        if(IsKeyPressed(KEY_FOUR) && Money>=100){
+            Money -= 100;
+            player.pickaxe=PickaxeType::Wilbur;
+        }
+        if(IsKeyPressed(KEY_THREE) && Money>=70){
+            Money -= 70;
+            player.pickaxe=PickaxeType::Legendary;
+        }
+        if(IsKeyPressed(KEY_TWO) && Money>=30){
+            Money -= 30;
+            player.pickaxe=PickaxeType::Epic;
+        }
+        if(IsKeyPressed(KEY_ONE) && Money>=0){
+            Money -= 0;
+            player.pickaxe=PickaxeType::Default;
+        }
+        
     }
 }
 
