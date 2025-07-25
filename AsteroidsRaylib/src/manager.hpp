@@ -37,6 +37,7 @@ class Manager
 
         float debugSize = 4;
 
+        Music main_music;
         Music music;
         Music staticMusic;
         Mouse mouse;

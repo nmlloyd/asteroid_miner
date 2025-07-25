@@ -83,6 +83,10 @@ void Manager::Start()
     staticMusic = LoadMusicStream("Audio/static.mp3");//static effects
     PlayMusicStream(staticMusic);
     staticMusic.looping = true;
+
+    main_music = LoadMusicStream("Audio/main_music.mp3");//static effects
+    PlayMusicStream(main_music);
+    main_music.looping = true;
     
 }
 void Manager::Draw()
@@ -370,6 +374,12 @@ void Manager::Update()
     {
         UpdateMusicStream(music);
         UpdateMusicStream(staticMusic);
+    }
+    else
+    
+    {
+        if(objective != Objective::VoidWarn1 && objective != Objective::VoidWarn2 & objective != Objective::VoidWarn3 & objective != Objective::Jumpscare)
+            UpdateMusicStream(main_music);
     }
 
 
@@ -828,11 +838,11 @@ void Manager::HandleInput()
         //ChangeScene(1);//starship
         if(mission.oreToMine == OreTile::BlueOre)
         {
-            Money += 20;
+            Money += 30;
         }
         else if(mission.oreToMine == OreTile::Meddorite)
         {
-            Money += 15;
+            Money += 20;
         }
         else if(mission.oreToMine == OreTile::MeteorCenter1)
         {
@@ -840,7 +850,7 @@ void Manager::HandleInput()
         }
         else if(mission.oreToMine == OreTile::HamOre)
         {
-            Money += 30;
+            Money += 40;
         }
         else if(mission.oreToMine == OreTile::Putin)
         {
