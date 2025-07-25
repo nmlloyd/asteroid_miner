@@ -227,7 +227,7 @@ void Manager::Update()
     }
 
     if(IsKeyPressed(KEY_ENTER)){
-        shop.shopActive=false;
+        shop.setShop(false);
     }
 
     if(IsKeyPressed(KEY_F1))
@@ -343,7 +343,7 @@ void Manager::Update()
                              else if(static_cast<OreTile>(cell.id) == OreTile::ShopThing)//check if is computer
                             {
                                 cout << "Toggled shop" << endl;
-                                shop.shopActive = true;
+                                shop.setShop(true);
                             }
                             else if(cell.id == 16)//check if is teleporter button
                             {
@@ -511,6 +511,7 @@ void Manager::Update()
     //     LoadStructureFromFile("test.grid");
     // }
 
+    runShopUI();
 
     if(jumpscare)
     {
@@ -544,7 +545,12 @@ void Manager::Update()
 }
 
 
-
+void Manager::runShopUI(){
+    //first check if the shop is even open
+    if(shop.getOverlayState()){
+        //now we wanna go through each of the buttons inside the shop
+    }
+}
 
 //==================================
 //      ALL NON-PUBLIC FUNCS

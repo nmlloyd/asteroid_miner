@@ -52,3 +52,8 @@ void setup(){
 Rectangle Button::getButtonArea(){
     return buttonArea;
 }
+
+//Check is a given position (should be the mouse) is inside the button rectange
+bool Button::isInsideButton(Vector2 mosPos){
+    return CheckCollisionPointRec(mosPos, buttonArea);
+}

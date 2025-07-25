@@ -1,5 +1,5 @@
 #pragma once
-#include <raylib.h>
+#include "raylib.h"
 #include <string>
 #include "structures.hpp"
 
@@ -23,6 +23,7 @@ class Button{
     void draw();
     void setup();
     Rectangle getButtonArea();
+    bool isInsideButton(Vector2 mosPos);
 
 };
 

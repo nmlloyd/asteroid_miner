@@ -22,13 +22,30 @@ Shope::Shope(){
 
     Vector2 positionOfBuyButton = {backplate.x+50, backplate.y+100};
     buttons.emplace_back(ButtonSpriteTypes::BUY, positionOfSellButton);
+
+    isOpen=false;
 }
 
 void Shope::draw(){
-    if(shopActive){
+    if(isOpen){
         DrawTextureEx(sprite, {backplate.x, backplate.y}, 0, 2, WHITE);
 
         // buttons[0].draw();
         // buttons[1].draw();   
     }
+}
+
+bool Shope::getOverlayState()
+{
+    return isOpen;
+}
+
+void Shope::setShop(bool state)
+{
+    isOpen = state;
+}
+
+void Shope::toggleShop()
+{
+    isOpen = !isOpen;
 }

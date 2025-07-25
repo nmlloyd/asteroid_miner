@@ -7,16 +7,21 @@ using namespace std;
 
 class Shope{
     private:
-    std::vector<Button> buttons;
+    bool isOpen;
+    
     static Texture2D sprite;
     Rectangle backplate;
 
     public:
+
+    vector<Button> buttons;
     Shope();
     
     void update();
     void draw();
 
-    bool shopActive= false;
+    bool getOverlayState();
+    void setShop(bool state);
+    void toggleShop();
 
 };

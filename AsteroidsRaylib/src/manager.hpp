@@ -52,6 +52,9 @@ class Manager
         void LoadSceneField(Vector2 playerScreenPos, bool erase);
         void SetRandomMission();
 
+        //local update funcs
+        void runShopUI();
+
         //local draw funcs
         void DrawDebugColls();
         void DrawAsteroidField();
