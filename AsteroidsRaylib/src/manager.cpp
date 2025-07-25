@@ -230,33 +230,53 @@ void Manager::Update()
         jumpscare = false;
         // if(scene == Scenes::Base)
         //     ChangeScene(Scenes::Field);//asteroid field
-        if(scene == Scenes::Field)//spaceship
+        objective = Objective::GoToComputer;
+        showTeleportAnim = true;
+        startAnimTime = GetTime() * 60;
+        ChangeScene(Scenes::Base);//return to the motherland
+        // field.clear();
+        //ChangeScene(1);//starship
+        if(mission.oreToMine == OreTile::BlueOre)
         {
-            objective = Objective::GoToComputer;
-            showTeleportAnim = true;
-            startAnimTime = GetTime() * 60;
-            ChangeScene(Scenes::Base);//return to the motherland
-            // field.clear();
+            Money += 20;
         }
-            //ChangeScene(1);//starship
-            Money +=10;
+        else if(mission.oreToMine == OreTile::Meddorite)
+        {
+            Money += 15;
+        }
+        else if(mission.oreToMine == OreTile::MeteorCenter1)
+        {
+            Money += 100;
+        }
+        else if(mission.oreToMine == OreTile::HamOre)
+        {
+            Money += 30;
+        }
+        else if(mission.oreToMine == OreTile::Putin)
+        {
+            Money += 10;
+        }
+        else
+        {
+            Money += 15;
+        }
     }
     if (IsKeyPressed(KEY_B)&&showDebug){
-            Money +=10;
+            Money += 10;
         }
-    if(IsKeyPressed(KEY_KP_1))//debug switch to default pick
+    if(IsKeyPressed(KEY_ONE))//debug switch to default pick
     {
         player.pickaxe = PickaxeType::Default;
     }
-    else if(IsKeyPressed(KEY_KP_2))//debug switch to medium q pick
+    else if(IsKeyPressed(KEY_TWO))//debug switch to medium q pick
     {
         player.pickaxe = PickaxeType::Epic;
     }
-    else if(IsKeyPressed(KEY_KP_3))//debug switch to LEGENDARY pick
+    else if(IsKeyPressed(KEY_THREE))//debug switch to LEGENDARY pick
     {
         player.pickaxe = PickaxeType::Legendary;
     }
-    else if(IsKeyPressed(KEY_KP_4))//debug switch to wilbur pick
+    else if(IsKeyPressed(KEY_FOUR))//debug switch to wilbur pick
     {
         player.pickaxe = PickaxeType::Wilbur;
     }
@@ -313,7 +333,7 @@ void Manager::Update()
                         // std::cout << "collided with cell at position (" << cell.position.x << ", " << cell.position.y << ")" << std::endl;
                         // std::cout << "mouse: " << mouse.GetCollider().x << ", " << mouse.GetCollider().y << std::endl;
                         // std::cout << cell.GetCollider().x << ", " << cell.GetCollider().y << ", " << cell.GetCollider().width << ", " << cell.GetCollider().height << std::endl;
-                        if(cell.isActiveAndEnabled && CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), (cell.GetCollider())))
+                        if(!showDebug && cell.isActiveAndEnabled && CheckCollisionPointRec(GetScreenToWorld2D(GetMousePosition(), camera), (cell.GetCollider())))
                         {
                             if(cell.allowBreaking && canMine)
                             {
@@ -513,7 +533,7 @@ void Manager::Update()
     else
         camera.zoom = expf(logf(camera.zoom) + ((float)GetMouseWheelMove()*0.1f));
     camera.target = { player.transform.position.x + halfW, player.transform.position.y + halfH };
-
+    computerUI.zoom = camera.zoom;
     // DestroyInactiveStars();
     // if(IsKeyPressed(KEY_L))
     // {
@@ -682,8 +702,8 @@ void Manager::ChangeScene(Scenes sceneId)
 
 void Manager::LoadSceneBase()
 {
-    field.clear();
-
+    // field.clear();
+    field.erase(field.begin(), field.end());
     
     SetRandomMission();//create new random mission
     computerUI.randomizedMission = mission;//set ui mission for use later
@@ -767,19 +787,19 @@ void Manager::LoadSceneField(Vector2 playerScreenPos, bool erase)
 void Manager::SetRandomMission()
 {
     MiningMission randomMission;
-    int amountToMine = GetRandomValue(1, 6);
+    int amountToMine = GetRandomValue(1, 5);
     int randomOre = GetRandomValue(0, 8);
     int isMeteorite = GetRandomValue(0, 100);
     switch(randomOre)
     {
         case 0://putin random
             randomMission.oreToMine = OreTile::Putin;
-            amountToMine *= 8;
+            amountToMine *= 5;
             randomMission.text = "Putonium";
             break;
         case 1:
             randomMission.oreToMine = OreTile::Meddorite;
-            amountToMine *= 4;
+            amountToMine *= 3;
             randomMission.text = "Meddorite";
             break;
         case 2:
@@ -790,32 +810,31 @@ void Manager::SetRandomMission()
 
         case 3:
             randomMission.oreToMine = OreTile::Maxium;
-            amountToMine *= 5;
+            amountToMine *= 4;
             randomMission.text = "Maxium";
             break;
         case 4:
             randomMission.oreToMine = OreTile::Trueblood;
-            amountToMine *= 5;
+            amountToMine *= 4;
             randomMission.text = "Truebloodium";
             break;
         case 5:
             randomMission.oreToMine = OreTile::Lucasite;
-            amountToMine *= 5;
+            amountToMine *= 4;
             randomMission.text = "Lucasite";
             break;
         case 6:
             randomMission.oreToMine = OreTile::Andreasite;
-            amountToMine *= 5;
+            amountToMine *= 4;
             randomMission.text = "Andreasite";
             break;
         case 7:
             randomMission.oreToMine = OreTile::Nathanium;
-            amountToMine *= 5;
+            amountToMine *= 4;
             randomMission.text = "Nathanium";
             break;
         case 8:
             randomMission.oreToMine = OreTile::HamOre;
-            amountToMine *= 1;
             randomMission.text = "Hamzterzoid";
             break;
     }
